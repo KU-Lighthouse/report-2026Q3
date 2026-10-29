@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KU Lighthouse — Q3 2026 Quarterly Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 13px; }
+body { font-family: 'IBM Plex Sans', sans-serif; background: #fff; color: #1c1c1c; line-height: 1.5; }
+
+:root {
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --ink:       #122947;
+  --mid:       #4a5568;
+  --soft:      #8a94a6;
+  --rule:      #e6eaf0;
+  --bg:        #f6f8fb;
+  --accent:    #197f8e;
+  --green:     #2d7a3a;
+  --green-bg:  #e6f2e8;
+  --amber:     #c47a10;
+  --amber-bg:  #fdf3dc;
+  --red:       #c0392b;
+  --red-bg:    #fdecea;
+  --purple:    #5b21b6;
+  --purple-bg: #ede9fe;
+  --science:   #2d7a3a;
+  --sund:      #425570;
+  --hum:       #197f8e;
+  --samf:      #d4843e;
+  --law:       #ffbd38;
+  --theo:      #c73028;
+  --ssh:        #197f8e;
+  --ext:       #666666;
+}
+
+/* ─── COVER ─── */
+.cover { background: var(--ink); padding: 56px 60px 48px; position: relative; overflow: hidden; }
+.cover::before { content:''; position:absolute; right:-120px; top:-120px; width:480px; height:480px; border-radius:50%; border:1px solid rgba(255,255,255,.05); }
+.cover::after { content:''; position:absolute; right:60px; top:60px; width:280px; height:280px; border-radius:50%; border:1px solid rgba(255,255,255,.04); }
+.cover-eyebrow { font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.38); margin-bottom:16px; }
+.cover h1 { font-family:'Playfair Display',Georgia,serif; font-size:52px; font-weight:400; line-height:1.08; color:#fff; }
+.cover h1 span { color:#DB3B0A; }
+.cover-meta { display:flex; gap:24px; margin-top:28px; flex-wrap:wrap; }
+.cover-pill { font-size:10px; color:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.12); border-radius:20px; padding:4px 14px; }
+.cover-note { margin-top:24px; font-size:11px; color:rgba(255,255,255,.28); border-top:1px solid rgba(255,255,255,.06); padding-top:16px; }
+
+/* ─── LAYOUT ─── */
+.body-wrap { max-width:960px; margin:0 auto; padding:0 60px; }
+.section { padding:32px 0 0; }
+.section + .section { margin-top:32px; }
+.section-eyebrow { font-size:9px; letter-spacing:.15em; text-transform:uppercase; color:var(--soft); display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.section-eyebrow::after { content:''; flex:1; height:1px; background:var(--rule); }
+h2.section-title { font-family:'Playfair Display',Georgia,serif; font-size:22px; font-weight:400; color:var(--ink); margin-bottom:4px; }
+.section-sub { font-size:12px; color:var(--soft); margin-bottom:18px; }
+
+/* ─── KPI CARDS ─── */
+.scorecard { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:10px; }
+.scorecard-auto { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:10px; align-items:stretch; }
+.scorecard-auto .kpi { display:flex; flex-direction:column; }
+.scorecard-auto .kpi .kpi-vs { margin-top:auto; }
+.scorecard-3 { grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); }
+.scorecard-2 { grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); }
+.kpi { background:var(--bg); border-radius:10px; padding:16px 16px 14px; position:relative; }
+.kpi-label { font-size:10px; color:var(--soft); line-height:1.35; margin-bottom:8px; }
+.kpi-value { font-family:'Playfair Display',serif; font-size:34px; font-weight:400; color:var(--ink); line-height:1; }
+.kpi-value.up { color:var(--green); }
+.kpi-value.watch { color:var(--amber); }
+.kpi-sub { font-size:10px; color:var(--soft); margin-top:5px; }
+.kpi-badge { position:absolute; top:10px; right:10px; font-size:8px; padding:2px 7px; border-radius:8px; font-weight:500; }
+.badge-new { background:var(--green-bg); color:var(--green); }
+.badge-q1 { background:var(--purple-bg); color:var(--purple); }
+.badge-watch { background:var(--amber-bg); color:var(--amber); }
+.kpi-vs .up { color:var(--green); font-weight:500; font-size:10px; }
+.kpi-vs .dn { color:var(--red); font-weight:500; font-size:10px; }
+.kpi-vs .na { color:var(--soft); font-size:10px; }
+
+/* ─── EXEC SUMMARY ─── */
+.obs-list { background:var(--bg); border-radius:12px; padding:20px 24px; }
+.obs-item { display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--rule); }
+.obs-item:last-child { border-bottom:none; padding-bottom:0; }
+.obs-item:first-child { padding-top:0; }
+.obs-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:6px; background:#122947; }
+.dot-g { background:var(--green); }
+.dot-a { background:var(--amber); }
+.dot-b { background:var(--accent); }
+.dot-p { background:var(--purple); }
+.obs-body { font-size:12px; line-height:1.7; color:var(--mid); }
+.obs-body strong { color:var(--ink); font-weight:600; }
+.obs-body .tag { font-size:10px; background:#fff; border:1px solid var(--rule); border-radius:6px; padding:1px 6px; color:var(--soft); margin-left:4px; }
+
+/* ─── HORIZONTAL BAR CHART ─── */
+.hbar-chart { margin-top:4px; }
+.hbar-row { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+.hbar-label { font-size:10px; color:var(--soft); width:105px; flex-shrink:0; text-align:right; line-height:1.3; }
+.hbar-label-wide { width:155px; }
+.hbar-track { flex:1; height:8px; background:#edf2f7; border-radius:4px; overflow:hidden; }
+.hbar-fill { height:100%; border-radius:4px; }
+.hbar-val { font-size:11px; font-weight:500; color:var(--ink); width:72px; text-align:right; font-family:'IBM Plex Mono',monospace; white-space:nowrap; }
+.hbar-val.soft { color:var(--soft); }
+
+/* ─── STACKED BAR ─── */
+.stacked-track { display:flex; height:10px; border-radius:5px; overflow:hidden; }
+.fak-legend { display:flex; gap:12px; flex-wrap:wrap; font-size:10px; color:var(--soft); margin-top:8px; }
+.fak-legend span { display:flex; align-items:center; gap:5px; }
+.fak-legend i { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+/* ─── PROGRAMME TABLE ─── */
+.prog-table { width:100%; border-collapse:collapse; font-size:12px; font-family:'DM Sans', sans-serif; }
+.prog-table thead th { text-align:right; font-size:10px; font-weight:500; color:var(--soft); padding:6px 8px 8px; border-bottom:1px solid var(--rule); }
+.prog-table thead th:first-child { text-align:left; }
+.prog-table tbody td { padding:10px 8px; border-bottom:1px solid var(--rule); color:var(--mid); text-align:right; vertical-align:middle; }
+.prog-table tbody td:first-child { text-align:left; color:var(--ink); font-weight:500; background:#fff; position:sticky; left:0; z-index:1; }
+.prog-table thead th:first-child { background:#fff; position:sticky; left:0; z-index:2; }
+.prog-table tbody tr:last-child td { border-bottom:none; }
+.prog-table tfoot td { padding:8px 8px; font-weight:600; color:var(--ink); border-top:1px solid var(--rule); text-align:right; }
+.prog-table tfoot td:first-child { text-align:left; background:#fff; position:sticky; left:0; }
+@media (max-width:600px) {
+  .prog-table .type-n, .prog-table .type-e { display:none; }
+}
+.type-n { background:#fde8e1; color:#DB3B0A; font-size:9px; padding:2px 7px; border-radius:8px; font-weight:500; display:inline-block; margin-left:5px; margin-bottom:3px; }
+.type-e { background:#e8eef5; color:#122947; font-size:9px; padding:2px 7px; border-radius:8px; font-weight:500; display:inline-block; margin-left:5px; margin-bottom:3px; }
+.type-emp { background:#d1fae5; color:#065f46; font-size:9px; padding:2px 7px; border-radius:8px; font-weight:500; display:inline-block; margin-left:5px; }
+
+/* ─── EVENTS TABLE ─── */
+.evt-table { width:100%; border-collapse:collapse; font-size:12px; }
+.evt-table thead th { text-align:left; font-size:10px; font-weight:500; color:var(--soft); padding:6px 8px 8px; border-bottom:1px solid var(--rule); }
+.evt-table thead th:last-child { text-align:right; }
+.evt-table tbody td { padding:8px 8px; border-bottom:1px solid var(--rule); color:var(--mid); vertical-align:middle; }
+.evt-table tbody td:first-child { color:var(--soft); font-size:10px; font-family:'IBM Plex Mono'; width:56px; }
+.evt-table tbody td:last-child { text-align:right; font-weight:600; color:var(--ink); font-family:'IBM Plex Mono'; }
+.evt-table tbody tr:last-child td { border-bottom:none; }
+.evt-name { color:var(--ink); font-size:12px; }
+.evt-mgr { font-size:10px; color:var(--soft); }
+
+/* ─── GENDER ─── */
+.gender-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.gender-card { background:var(--bg); border-radius:10px; padding:14px 16px; }
+.gc-title { font-size:11px; font-weight:500; color:var(--ink); margin-bottom:10px; }
+.gc-bar-wrap { display:flex; height:6px; border-radius:3px; overflow:hidden; margin-bottom:10px; }
+.gc-row { display:flex; justify-content:space-between; font-size:11px; color:var(--soft); padding:2px 0; }
+.gc-row span { font-weight:500; color:var(--ink); font-family:'IBM Plex Mono'; }
+
+/* ─── TWO/THREE COL ─── */
+.two-col { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px; }
+.q2-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media (max-width:600px) { .q2-grid { grid-template-columns:1fr; } }
+.three-col { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; }
+
+/* ─── INSIGHT BOXES ─── */
+.insight { border-left:3px solid #2563a8; padding:12px 16px; background:#e8f0f8; border-radius:0 8px 8px 0; font-size:12px; color:var(--mid); line-height:1.65; margin-top:12px; }
+.insight strong { color:var(--ink); }
+.insight-amber { border-left-color:var(--amber); background:var(--amber-bg); }
+.insight-green { border-left-color:var(--green); background:var(--green-bg); }
+.insight-purple { border-left-color:var(--purple); background:var(--purple-bg); }
+
+/* ─── CARD ─── */
+.card { background:var(--bg); border-radius:10px; padding:16px 18px; }
+.card-title { font-size:10px; font-weight:500; color:var(--soft); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; }
+
+/* ─── DATA TABLE ─── */
+.data-table { width:100%; border-collapse:collapse; font-size:11px; }
+.data-table th { text-align:left; font-size:10px; font-weight:500; color:var(--soft); padding:5px 8px 7px; border-bottom:1px solid var(--rule); }
+.data-table td { padding:6px 8px; border-bottom:1px solid #f3f5f8; color:var(--mid); }
+.data-table td:first-child { color:var(--ink); }
+.data-table tr:last-child td { border-bottom:none; }
+.data-table .num { text-align:right; font-family:'IBM Plex Mono'; font-size:11px; font-weight:500; color:var(--ink); }
+.data-table .soft { color:var(--soft); font-weight:400; }
+.data-table tfoot td { font-weight:600; color:var(--ink); border-top:1px solid var(--rule); padding-top:7px; }
+
+/* ─── CHAPTER BREAK ─── */
+.chapter { background:var(--ink); padding:28px 60px 24px; margin:40px -60px 0; }
+.chapter-pre { font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.3); margin-bottom:6px; }
+.chapter h2 { font-family:'Playfair Display',serif; font-size:26px; font-weight:400; color:#fff; }
+.chapter-sub { font-size:11px; color:rgba(255,255,255,.35); margin-top:6px; }
+
+/* ─── FOOTER ─── */
+.footer { background:var(--ink); padding:24px 60px; margin:48px -60px 0; }
+.footer p { font-size:10px; color:rgba(255,255,255,.28); line-height:1.9; }
+
+/* ─── STATUS PILL ─── */
+.status { font-size:9px; padding:2px 8px; border-radius:8px; font-weight:500; display:inline-block; }
+.st-track { background:var(--green-bg); color:var(--green); }
+.st-watch { background:var(--amber-bg); color:var(--amber); }
+.st-new  { background:var(--purple-bg); color:var(--purple); }
+
+/* ─── DIVIDER ─── */
+.divider { height:1px; background:var(--rule); margin:20px 0; }
+
+/* ─── ACAD LEVEL VISUAL ─── */
+.acad-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.acad-label { font-size:10px; color:var(--soft); width:140px; flex-shrink:0; text-align:right; }
+.acad-track { flex:1; height:8px; background:#edf2f7; border-radius:4px; overflow:hidden; }
+.acad-fill { height:100%; border-radius:4px; }
+.acad-val { font-size:11px; font-weight:500; color:var(--ink); width:36px; text-align:right; font-family:'IBM Plex Mono'; }
+
+/* ─── FUNNEL ─── */
+.funnel-step { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; justify-content:flex-end; }
+.funnel-bar { border-radius:4px 4px 0 0; width:100%; }
+.funnel-num { font-size:26px; font-family:'Playfair Display',serif; color:var(--ink); line-height:1; margin-top:4px; }
+.funnel-num.watch { color:var(--amber); }
+.funnel-lbl { font-size:10px; color:var(--soft); text-align:center; line-height:1.3; }
+.funnel-labels { display:flex; gap:6px; margin-top:8px; }
+@media (max-width:480px) { .funnel-labels { display:none; } }
+
+/* ─── USER PLATFORM CARD ─── */
+.platform-card { background:var(--bg); border-radius:12px; padding:18px 20px; }
+.platform-big { font-family:'Playfair Display',serif; font-size:44px; color:var(--ink); line-height:1; }
+.platform-big.up { color:var(--green); }
+
+@media print {
+  body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .chapter { margin:40px 0 0; }
+  .footer { margin:48px 0 0; }
+}
+
+/* ─── HEAT GRID (faculty matrix) ─── */
+.heat-grid { display: grid; grid-template-columns: 148px repeat(6,1fr); gap: 3px; font-size: 10px; margin-top: 12px; }
+.heat-grid .hg-header { background: var(--bg); border-radius: 4px; padding: 7px 4px; text-align: center; color: var(--soft); font-weight: 500; font-size: 9px; line-height: 1.35; }
+.heat-grid .hg-label  { padding: 7px 10px 7px 0; color: var(--mid); font-weight: 500; display: flex; align-items: center; font-size: 11px; }
+.heat-grid .hg-cell   { border-radius: 4px; padding: 7px 4px; text-align: center; font-family: 'IBM Plex Mono'; font-weight: 600; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+.heat-0  { background: #eef0f4; color: #c0c8d4; font-weight: 400; }
+.heat-1  { background: #cce8ea; color: #0a5963; }
+.heat-2  { background: #a8d4d8; color: #0a5963; }
+.heat-3  { background: #7abcc4; color: #fff; }
+.heat-5  { background: #3d8a94; color: #fff; }
+.heat-hi { background: #3d8a94; color: #fff; }
+.heat-total { background: #0a5963; color: #fff; border-radius: 4px; }
+.ind-sep { font-size: 9px; letter-spacing: .13em; text-transform: uppercase; color: var(--soft); display: flex; align-items: center; gap: 10px; margin: 28px 0 14px; }
+.ind-sep::after { content: ''; flex: 1; height: 1px; background: var(--rule); display: inline-block; }
+.ind-badge { background: var(--bg); border-radius: 6px; padding: 2px 8px; font-family: 'IBM Plex Mono'; font-size: 9px; letter-spacing: 0; text-transform: none; color: var(--mid); flex-shrink: 0; }
+
+/* ─── TBA / PLACEHOLDER (Q2 data pending) ─── */
+.tba { color: var(--soft); font-style: italic; font-weight: 400 !important; }
+.tba-cell { background: repeating-linear-gradient(135deg, #fff, #fff 6px, #fafbfc 6px, #fafbfc 12px); }
+.tba-pill { font-size: 8px; padding: 2px 7px; border-radius: 8px; font-weight: 500; background: #eef1f5; color: var(--soft); border: 1px dashed #ccd3dd; }
+.kpi-value.tba { font-size: 22px; letter-spacing: .02em; }
+.tba-nodata { color: #c73028 !important; font-style: italic; font-weight: 600 !important; }
+.tba-nodata-cell { background: repeating-linear-gradient(135deg, #fff, #fff 6px, #fdf2f1 6px, #fdf2f1 12px); }
+
+
+/* ─── Q3 TEMPLATE ADDITIONS ─── */
+:root { --q3: #5b21b6; }
+.kt { width:100%; border-collapse:collapse; font-size:11.5px; font-family:'DM Sans',sans-serif; }
+.kt thead th { font-size:9.5px; color:var(--soft); font-weight:500; border-bottom:2px solid var(--rule); padding:7px 8px; text-align:right; }
+.kt thead th:first-child, .kt thead th.l { text-align:left; }
+.kt thead th.cur { background:var(--bg); }
+.kt tbody td { padding:7px 8px; text-align:right; color:var(--mid); border-bottom:1px solid var(--rule); }
+.kt tbody tr:last-child td { border-bottom:none; }
+.kt tbody td:first-child { text-align:left; color:var(--ink); }
+.kt td.v { font-weight:700; color:var(--ink); }
+.kt td.y { font-weight:600; color:var(--ink); }
+.kt td.n { font-size:10.5px; color:var(--soft); text-align:left; }
+.kt td.d { text-align:center; font-weight:600; color:var(--ink); }
+.kt tr.grp td { background:var(--bg); padding:6px 8px; font-size:9px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--soft); text-align:left; border-bottom:none; }
+.kt tr.grp a { color:inherit; text-decoration:none; }
+.kt tr.grp a:hover { text-decoration:underline; }
+.kt .g { color:var(--green); font-weight:600; }
+.kt .a { color:var(--amber); font-weight:600; }
+.kt .soft { color:var(--soft); }
+.kt tfoot td { padding:8px 8px; font-weight:600; color:var(--ink); border-top:1px solid var(--rule); text-align:right; }
+.kt tfoot td:first-child { text-align:left; }
+.legend { display:flex; gap:16px; margin:8px 0 14px; flex-wrap:wrap; }
+.legend span { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--soft); }
+.legend i { width:10px; height:10px; border-radius:2px; display:inline-block; }
+.legend.dots i { border-radius:50%; width:9px; height:9px; }
+.fnote { font-size:10px; color:var(--soft); margin:6px 0 16px; }
+.chart-title { font-size:11px; font-weight:500; color:var(--ink); margin-bottom:6px; }
+details.arch { margin-top:16px; font-size:11px; color:var(--soft); }
+details.arch summary { cursor:pointer; font-weight:500; margin-bottom:8px; }
+.draft-banner { background:var(--amber-bg); border-left:3px solid var(--amber); color:var(--mid); font-size:11px; padding:10px 14px; margin:20px 0 0; border-radius:0 8px 8px 0; }
+.insight-tbd { border-left-color:var(--q3); background:var(--purple-bg); font-style:italic; }
+.evt-badge { font-size:8.5px; padding:1px 6px; border-radius:8px; color:#fff; font-weight:500; }
+.pcard-title { font-size:11px; font-weight:500; color:var(--ink); margin-bottom:4px; }
+.pcard-sub { font-size:11px; color:var(--soft); margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   KU LIGHTHOUSE — Q3 2026 REPORT TEMPLATE
+   ───────────────────────────────────────────────────────────────────────
+   HOW TO FILL IN Q3
+   • All numbers live in the DATA blocks below. Tables, charts, YTD, % of 2025,
+     Q3 vs Q2 arrows and totals are calculated automatically.
+   • Q1 and Q2 are fixed. Q3 values are `null` = shown as "TBA".
+     Replace `q3: null` with a number (or an object/array where shown).
+   • Per-faculty arrays follow the label order given right next to them.
+   • New department? Append the label AND a value to every array in that block
+     (q1, q2, q3 …). New programme? Add an object to PROG and rows to PROG_DEMO.
+   • Narrative text: fill in INSIGHTS at the bottom of the DATA section.
+   • When the report is final, set REPORT.draft = false (hides the draft banner).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const REPORT = {
+  quarter: 'Q3', year: 2026,
+  period: 'July – September 2026',
+  dataDate: '30 September 2026',
+  ytdLabel: 'Q1–Q3 2026 YTD',
+  paceShare: 0.75,      // green if YTD >= 75% of the full-year 2025 total
+  draft: false
+};
+
+/* ── Top-level indicators (Q1, Q2 fixed; q3 = null → TBA) ─────────────── */
+const IND = {
+  // Student Innovation & Entrepreneurship
+  curr_students: { label:'Students in curricular courses', q1:414, q2:340, q3:200, y25:869 },
+  curr_courses:  { label:'Curricular courses',             q1:10,  q2:7,   q3:3,   y25:26 },
+  ects:          { label:'ECTS projects',                  q1:13,  q2:8,   q3:17,  y25:43 },
+  educators:     { label:'Educators engaged',              q1:102, q2:192, q3:61,  y25:'— (new in Q1)', noPace:true,
+                   note:'Not unique educators — the same person may be counted more than once' },
+  aware_reach:   { label:'Student awareness reach',        q1:229, q2:774, q3:593, y25:1423 },
+  aware_acts:    { label:'Student awareness activities',   q1:11,  q2:8,   q3:14,  y25:25 },
+  leads:         { label:'Student leads',                  q1:27,  q2:28,  q3:10,  y25:95 },
+  // Student platform (users, projects, CVR) and Programmes & events — see IND order
+  users:         { label:'Student users (platform)',            q1:631, q2:143, q3:153, y25:519, stock:true,
+                   note:'Active users per quarter, incl. users not from UCPH. Q1/2025 = old method (all platform users). From Q2 = new method (active platform student users)' },
+  projects:      { label:'Student startup-projects (platform)', q1:411, q2:71, q3:84, y25:355, stock:true,
+                   note:'Active projects per quarter. Q1/2025 = old method (all platform projects). From Q2 = new method (active platform projects)' },
+  cvr:           { label:'Student startups with CVR',      q1:3,   q2:4,   q3:null, y25:11,
+                   note:'Q1 corrected from 2 to 3 — an extra CVR was found. Q3: not yet available' },
+  ev_count:      { label:'Number of events',               q1:18,  q2:32,  q3:null, y25:24, noPace:true, note:'Excl. Community Breakfast sessions (shown below). 2025 used a different method, so no pace is shown' },
+  ev_signups:    { label:'Event sign-ups (incl. Community Breakfast)', q1:571, q2:1571, q3:null, y25:'—' },
+  ev_signups_ex: { label:'Total sign-ups',                 q1:409,  q2:1399, q3:null, y25:'—', note:'Excl. Community Breakfast' },
+  cb_north:      { label:'Community Breakfast North',      q1:98,   q2:131,  q3:42, y25:'—' },
+  cb_south:      { label:'Community Breakfast South',      q1:64,   q2:41,   q3:38, y25:'—' },
+  prog_active:   { label:'Active programmes',              q1:5,    q2:3,    q3:4,    y25:'—', noYtd:true,
+                   note:'Q3: KU Innovators, Explore, Sustainability Olympiad, Open Entrepreneurship (4 of 10)' },
+  prog_people:   { label:'Individuals in programmes',      q1:277,  q2:86,   q3:201,  y25:478, note:'Accepted individuals, from programme sheet. Q3 excludes Open Entrepreneurship (participant numbers not reported)' },
+  prog_projects: { label:'Projects in programmes',         q1:54,   q2:39,   q3:53,   y25:'—', note:'Accepted teams/projects. Q3: KU Innovators 21, Open Entrepreneurship 32' },
+  // Researcher Innovation & Entrepreneurship
+  inn_leads:     { label:'Innovation leads',               q1:82,   q2:67,   q3:68, y25:'— (new in Q1)', noPace:true,
+                   yoy:{ q2_2025:'—', q3_2025:'—' } },
+  idfs:          { label:'IDFs filed',                     q1:28,   q2:33,   q3:25, y25:66,  yoy:{ q2_2025:10, q3_2025:16 } },
+  licences:      { label:'Licences signed',                q1:2,    q2:10,   q3:7, y25:25,  yoy:{ q2_2025:5,  q3_2025:4 } },
+  spinouts:      { label:'Spin-outs formed',               q1:0,    q2:4,    q3:6, y25:7,   yoy:{ q2_2025:0,  q3_2025:1 } },
+  active_cases:  { label:'Active cases',                   q1:183,  q2:189,  q3:239, y25:'— (new in Q1)', stock:true, yoy:{ q2_2025:'—', q3_2025:'—' },
+                   note:'Total at quarter-end, not additive' },
+  poc_apps:      { label:'PoC applications',               q1:24,   q2:35,   q3:28, y25:73,  yoy:{ q2_2025:9,  q3_2025:18 } },
+  poc_funded:    { label:'PoC funded',                     q1:20,   q2:31,   q3:14, y25:60,  yoy:{ q2_2025:13, q3_2025:8 } },
+  ie_apps:       { label:'InnoExplore applicants',         q1:9,    q2:16,   q3:18, y25:33,  yoy:{ q2_2025:'—', q3_2025:'—' } },
+  ie_decl:       { label:'InnoExplore supported declarations', q1:8, q2:7,    q3:null, y25:23,  yoy:{ q2_2025:'—', q3_2025:'—' } },
+  ie_funded:     { label:'InnoExplore received funding',   q1:4,    q2:2,    q3:null, y25:5,   yoy:{ q2_2025:'—', q3_2025:'—' } },
+  // Researcher outreach (new in Q2)
+  res_acts:      { label:'Researcher awareness & understanding activities', q1:'— (new in Q2)', q2:19,  q3:8,    y25:'—', noYtd:true },
+  res_vip:       { label:'VIP reach',                      q1:'— (new in Q2)', q2:561, q3:474,  y25:'—', noYtd:true }
+};
+
+/* Community Breakfast sessions [Q1, Q2, Q3] */
+const CB_SESSIONS = { north:[12,12,4], south:[8,12,2] };
+
+/* ── Per-faculty series: { y25, q1, q2, q3 } in the label order shown ─────── */
+const FACS = {
+  curr_students: { labels:['Health','Science','Humanities','Social Sciences','Law','Theology','UCPH Across'],
+                   y25:[348,256,100,105,0,0,60], q1:[65,279,70,0,0,0,0], q2:[110,100,65,65,0,0,0], q3:[75,0,0,65,0,0,60] },
+  curr_courses:  { labels:['Science','Humanities','Health','Social Sciences','Law','Theology','UCPH Across'],
+                   y25:[6,4,13,2,0,0,1], q1:[5,3,2,0,0,0,0], q2:[2,1,3,1,0,0,0], q3:[0,0,1,1,0,0,1] },
+  ects:          { labels:['Humanities','Science','Social Sciences','Health','Theology','Law'],
+                   y25:[7,18,6,11,1,0], q1:[7,3,3,0,0,0], q2:[2,3,0,2,1,0], q3:[12,4,0,1,0,0] },
+  aware_reach:   { labels:['UCPH Across','Humanities','Science','Health','Social Sciences','Law','Theology','UCPH Beyond'],
+                   y25:[415,145,456,240,92,15,0,60], q1:[61,51,45,43,23,6,0,0], q2:[731,20,0,0,6,0,17,0], q3:[164,0,256,78,83,0,12,0] },
+  leads:         { labels:['Humanities','Health','Science','Social Sciences','Theology','Law'],
+                   y25:[11,21,30,5,0,5], q1:[10,7,7,2,2,0], q2:[8,1,11,4,0,1], q3:[2,2,1,0,0,1] },
+  users:         { labels:['Not from UCPH','Science','Humanities','Health','Social Sciences','Law','Theology'],
+                   y25:null, q1:[208,193,78,66,41,16,6], q2:[54,44,21,9,6,6,3], q3:[53,43,32,10,7,6,2] },
+  pipeline:      { labels:['Innovation leads','IDFs filed','Licences signed','Spin-outs formed'],
+                   y25:[0,66,25,7], q1:[82,28,2,0], q2:[67,33,10,4], q3:[68,25,7,6] },
+  funding:       { labels:['PoC applications','PoC funded','InnoExplore applicants','InnoExplore supported decl.','InnoExplore received funding'],
+                   y25:[73,60,33,23,5], q1:[24,20,9,8,4], q2:[35,31,16,7,2], q3:[28,14,18,null,null] },
+  vip:           { labels:['Health','Science','Humanities','UCPH Across','Social Sciences','Law','Theology'],
+                   y25:null, q1:null, q2:[258,155,78,70,0,0,0], q3:[204,50,50,120,40,10,0] }
+};
+
+/* Researcher metrics by faculty — order: Health, Science, Humanities, Social Sciences, Law, Theology */
+const RES_FAC = {
+  leads:     { q1:[41,30,8,4,0,0],  q2:[34,30,3,3,0,0],  q3:[28,33,2,5,1,0] },
+  idfs:      { q1:[16,12,0,0,0,0],  q2:[18,15,0,0,0,0],  q3:[14,11,1,0,0,0] },
+  licences:  { q1:[2,0,0,0,0,0],    q2:[7,5,0,0,0,0],    q3:[1,5,1,0,0,0] },
+  spinouts:  { q1:[0,0,0,0,0,0],    q2:[2,4,0,0,0,0],    q3:[1,4,1,0,0,0] },
+  poc_apps:  { q1:[11,8,4,0,1,0],   q2:[14,13,2,5,1,0],  q3:[8,13,3,3,1,0] },
+  poc_funded:{ q1:[8,7,4,0,1,0],    q2:[13,10,2,5,1,0],  q3:[4,7,0,3,0,0] }
+};
+
+/* Researcher metrics by department. Each group: labels + q1/q2/q3 arrays (same length as labels).
+   q3: [] = no data yet. */
+const DEPT = {
+  leads: {
+    'Health':{ labels:['BRIC','CTN','Biomedical Sciences','Cell. & Mol. Medicine','Clinical Medicine','Drug Design & Pharm.','Neuroscience','Odontology','Pharmacy','Public Health','Vet. & Animal Sciences','Globe Institute','CBMR','CPR','reNEW','Immunology & Microbiology'],
+                q1:[6,2,3,5,0,4,3,1,4,2,3,1,4,0,5,0], q2:[2,4,5,0,2,5,3,0,4,2,3,2,0,1,2,0], q3:[2,1,3,3,2,8,1,0,4,1,1,1,4,1,0,2] },
+    'Science':{ labels:['Biology','Chemistry','Computer Science','Food Science','Mathematical Sciences','Nutrition, Exercise & Sports','Plant & Env. Sciences','Niels Bohr Institute','Geosciences & NRM'],
+                q1:[9,4,1,5,0,0,5,6,0], q2:[2,1,3,3,3,4,5,9,0], q3:[1,4,2,3,1,3,3,16,1] },
+    'SSH / Law / Theo':{ labels:['Arts & Cultural Studies','Communications','Cross-Cultural Studies','English Germanic & Romance','Nordic Studies & Linguistics','SODAS','Economics','Psychology','Sociology','The Saxo Institute'],
+                q1:[0,3,3,1,1,1,1,2,0,0], q2:[1,0,2,0,0,1,0,0,2,0], q3:[0,0,1,0,0,2,0,3,0,1] }
+  },
+  idfs: {
+    'Health':{ labels:['BRIC','CTN','Biomedical Sciences','Cell. & Mol. Medicine','Drug Design & Pharm.','Neuroscience','Odontology','Pharmacy','Public Health','Vet. & Animal Sciences','CBMR','reNEW','Clinical Medicine','Immunology & Microbiology','Globe Institute'],
+                q1:[0,3,2,2,3,0,2,3,0,1,2,1,0,0,0], q2:[3,0,2,0,4,3,0,2,1,1,0,2,0,0,0], q3:[0,2,1,0,5,1,0,3,0,0,3,0,2,2,1] },
+    'Science':{ labels:['Biology','Chemistry','Computer Science','Food Science','Nutrition, Exercise & Sports','Plant & Env. Sciences','Niels Bohr Institute'],
+                q1:[3,1,1,2,1,4,1], q2:[1,1,0,0,2,5,6], q3:[3,1,1,0,0,2,4] },
+    'SSH / Law / Theo':{ labels:['Communications'],
+                q1:[0], q2:[0], q3:[1] }
+  },
+  licences: {
+    'Health':{ labels:['Biomedical Sciences','Clinical Medicine','Drug Design & Pharm.','Immunology & Microbiology','CBMR'],
+                q1:[2,0,1,0,0], q2:[1,1,0,5,0], q3:[0,0,0,0,1] },
+    'Science':{ labels:['Biology','Chemistry','Nutrition, Exercise & Sports','Niels Bohr Institute','Geosciences & NRM','Plant & Env. Sciences'],
+                q1:[0,0,0,0,0,0], q2:[1,1,1,2,0,0], q3:[1,0,0,2,1,1] },
+    'SSH / Law / Theo':{ labels:['The Saxo Institute'],
+                q1:[0], q2:[0], q3:[1] }
+  },
+  spinouts: {
+    'Health':{ labels:['Biomedical Sciences','Clinical Medicine','CBMR'],
+                q1:[0,0,0], q2:[1,1,0], q3:[0,0,1] },
+    'Science':{ labels:['Biology','Chemistry','Nutrition, Exercise & Sports','Niels Bohr Institute','Geosciences & NRM','Plant & Env. Sciences'],
+                q1:[0,0,0,0,0,0], q2:[1,1,1,1,0,0], q3:[1,0,0,1,1,1] },
+    'SSH / Law / Theo':{ labels:['The Saxo Institute'],
+                q1:[0], q2:[0], q3:[1] }
+  },
+  // PoC: applications + funded per department
+  poc: {
+    'Health':{ labels:['BRIC','Biomedical Sciences','Drug Design & Pharm.','Neuroscience','Pharmacy','Public Health','Vet. & Animal Sciences','CBMR','reNEW','Immunology & Microbiology'],
+                appsQ1:[0,1,4,0,1,1,1,1,2,0], appsQ2:[1,4,0,2,2,1,3,1,0,0], appsQ3:[0,1,1,0,2,1,2,0,0,1],
+                fundedQ1:[0,1,2,0,1,1,1,0,2,0], fundedQ2:[0,4,0,2,2,1,3,1,0,0], fundedQ3:[0,1,1,0,1,0,1,0,0,0] },
+    'Science':{ labels:['Biology','Chemistry','Computer Science','Food Science','Plant & Env. Sciences','Niels Bohr Institute','Natural History Museum','Geosciences & NRM','Mathematical Sciences','Science Education'],
+                appsQ1:[2,2,0,0,4,0,0,0,0,0], appsQ2:[2,3,1,1,4,1,1,0,0,0], appsQ3:[3,2,1,0,1,3,0,1,1,1],
+                fundedQ1:[1,2,0,0,4,0,0,0,0,0], fundedQ2:[1,2,1,1,3,1,1,0,0,0], fundedQ3:[2,0,1,0,0,2,0,1,0,1] },
+    'SSH / Law / Theo':{ labels:['CIP','Communications','Cross-Cultural Studies','English Germanic & Romance','The Saxo Institute','SODAS','Psychology','Sociology'],
+                appsQ1:[1,1,0,1,1,0,0,0], appsQ2:[0,0,2,0,0,3,2,0], appsQ3:[0,1,1,1,0,1,1,1],
+                fundedQ1:[1,1,0,1,1,0,0,0], fundedQ2:[0,0,2,0,0,3,2,0], fundedQ3:[0,0,0,0,0,1,1,1] }
+  }
+};
+
+/* ── Programmes ──────────────────────────────────────────────────────────
+   type: 'n' = Nurture, 'e' = Engage.
+   Per quarter: {app, acc, proj}. Quarter missing = '–' (no uptake that quarter).
+   q3: null = TBA. Values may be a string such as '13*' (team applications).
+   For a new programme, add an object to PROG (and rows to PROG_DEMO).        */
+const PROG = [
+  { name:'Explore',                type:'n', y25:{app:298, acc:257}, q1:{app:142, acc:137, proj:'—'}, q2:undefined, q3:{app:167, acc:134, proj:'—'} },
+  { name:'KU Innovators',          type:'n', y25:{app:92,  acc:92},  q1:{app:28,  acc:28,  proj:23},  q2:{app:18, acc:18, proj:10}, q3:{app:27, acc:27, proj:21} },
+  { name:'Health Innovators',      type:'e', y25:{app:40,  acc:34},  q1:{app:34,  acc:34,  proj:12},  q2:undefined, q3:undefined },
+  { name:'Lighthouse Launch',      type:'e', y25:{app:'—', acc:'—'}, q1:{app:19,  acc:51,  proj:9},   q2:undefined, q3:undefined },
+  { name:'SPARK Denmark',          type:'e', y25:{app:43,  acc:22},  q1:{app:34,  acc:27,  proj:10},  q2:undefined, q3:undefined },
+  { name:'Sustainability Olympiad',type:'n', y25:{app:55,  acc:55},  q1:{app:0,   acc:0,   proj:'—'}, q2:undefined, q3:{app:40, acc:40, proj:'—'} },
+  { name:'Student VC Programme',   type:'e', y25:{app:37,  acc:12},  q1:{app:0,   acc:0,   proj:'—'}, q2:undefined, q3:{app:0, acc:0, proj:'—'} },
+  { name:'Spin-Outs Denmark',      type:'e', y25:{app:8,   acc:6},   q1:{app:0,   acc:0,   proj:0},    q2:undefined, q3:undefined },
+  { name:'Open Entrepreneurship',  type:'e', y25:{app:'—', acc:'—'}, q1:{app:'—', acc:'—', proj:'—'},  q2:{app:100, acc:52, proj:21}, q3:{app:'38*', acc:'—', proj:32} },
+  { name:'Fintech Venture Track',  type:'e', y25:{app:'—', acc:'—'}, q1:{app:'—', acc:'—', proj:'—'},  q2:{app:'13*', acc:16, proj:8}, q3:undefined }
+];
+
+/* Participant profile per programme and quarter (accepted individuals).
+   fac   = [Science, Health, Humanities, Social Sciences, Theology, Law, Unknown, Not from UCPH]
+   acad  = [Students, PhD / Researcher, Other, Unknown]
+   gen   = [Female, Male, Other, Unknown]
+   Add Q3 rows at the bottom, e.g.:
+   { p:'KU Innovators', q:'Q3', fac:[…8 numbers…], acad:[…4…], gen:[…4…] }              */
+const PROG_DEMO = [
+  { p:'Explore',               q:'Q1', fac:[18,3,2,4,1,0,0,109], acad:[133,4,0,0],  gen:[69,65,2,1] },
+  { p:'Explore', q:'Q3', fac:[14,13,6,2,1,0,0,98], acad:[132,2,0,0], gen:[59,75,0,0] },
+  { p:'KU Innovators',         q:'Q1', fac:[8,1,10,5,1,0,1,2],   acad:[26,1,1,0],   gen:[16,11,1,0] },
+  { p:'KU Innovators',         q:'Q2', fac:[4,3,7,0,1,0,0,3],    acad:[16,1,1,0],   gen:[7,11,0,0] },
+  { p:'KU Innovators', q:'Q3', fac:[5,2,15,0,1,2,0,2], acad:[22,3,2,0], gen:[13,14,0,0] },
+  { p:'Health Innovators',     q:'Q1', fac:[3,1,1,1,0,0,0,28],   acad:[32,1,1,0],   gen:[26,8,0,0] },
+  { p:'Lighthouse Launch',     q:'Q1', fac:[8,0,3,0,1,1,0,38],   acad:[0,0,0,51],   gen:[11,18,6,16] },
+  { p:'SPARK Denmark',         q:'Q1', fac:[0,9,0,0,0,0,0,18],   acad:[1,22,4,0],   gen:[11,16,0,0] },
+  { p:'Sustainability Olympiad', q:'Q3', fac:[0,2,1,3,0,0,0,34], acad:[35,5,0,0], gen:[26,14,0,0] },
+  { p:'Open Entrepreneurship', q:'Q2', fac:[3,6,0,0,0,0,43,0],   acad:[0,9,0,43],   gen:[0,0,0,52] },
+  { p:'Fintech Venture Track', q:'Q2', fac:[1,0,0,0,0,0,0,15],   acad:[16,0,0,0],   gen:[0,0,0,16] }
+];
+
+/* ── Events and outreach lists for Q3 (add rows as objects) ─────────────── */
+// { date:'Jul 07', name:'…', mgr:'…', signups: 12 }
+const EVENTS_Q3 = [
+  { date:"Aug 18", name:"Who Is Responsible When AI Makes Decisions About People?", mgr:"Danny", signups:120, basis:"signup", src:"events" },
+  { date:"Aug 25", name:"Tech BBQ day 0, investor evening", mgr:"Bo", signups:700, basis:"signup", src:"events" },
+  { date:"Aug 26", name:"Micro-biology cluster", mgr:"Klavs", signups:50, basis:"signup", src:"outreach" },
+  { date:"Sep 02", name:"Community Intro Session", mgr:"Peter", signups:15, basis:"signup", src:"events" },
+  { date:"Sep 02", name:"FoodHack Copenhagen: Precision Fermentation and the Future of Ingredients", mgr:"Bo", signups:55, basis:"signup", src:"events" },
+  { date:"Sep 03", name:"Co-founder run", mgr:"Neta", signups:120, basis:"signup", src:"outreach" },
+  { date:"Sep 06", name:"MasterClass: Funding in Life Sciences", mgr:"Neta and Peter", signups:34, basis:"signup", src:"outreach" },
+  { date:"Sep 08", name:"MasterClass: Validate Your Idea in 5 Weeks", mgr:"Peter", signups:13, basis:"signup", src:"events" },
+  { date:"Sep 15", name:"Community Intro Session", mgr:"Peter", signups:6, basis:"signup", src:"events" },
+  { date:"Sep 16", name:"Finding ideas worth building @Søndre Campus!", mgr:"Alida", signups:14, basis:"signup", src:"events" },
+  { date:"Sep 22", name:"Nordic Fintech week, day 0 (4 forskellige ventes løbende)", mgr:"Danny", signups:80, basis:"signup", src:"events" },
+  { date:"Sep 22", name:"MasterClass: Formalities of forming a company", mgr:"Peter", signups:36, basis:"signup", src:"events" },
+  { date:"Sep 23", name:"Co-Founder night", mgr:"Neta", signups:115, basis:"headcount", src:"events" },
+  { date:"Sep 23", name:"University Spinouts Shaping the Future of Financial Services: Cybersecurity, Quantum tech, data-driven advisory - på Nordic Fintech week konference", mgr:"Danny", signups:35, basis:"headcount", src:"events" },
+  { date:"Sep 24", name:"Not a pitch på Nordic Fintech week konferencen (hovedscene - vi kunne ikke tælle folk)", mgr:"Danny", signups:0, basis:"none", src:"events" },
+  { date:"Sep 25", name:"Innovation Friday med Eva Hoffman", mgr:"Peter", signups:86, basis:"signup", src:"events" },
+  { date:"Sep 28", name:"SPARK pre-NIF event at BII", mgr:"Helen", signups:70, basis:"headcount", src:"events" },
+  { date:"Sep 28", name:"SPARK Mentor-to-Market event at NIF", mgr:"Helen", signups:60, basis:"headcount", src:"events" }
+];
+/* basis: 'signup' = registered sign-ups, 'headcount' = headcount used because no sign-ups were registered, 'none' = neither available (counts as 0).
+   src: 'events' = KPI_data_events, 'outreach' = Research_Outreach (rows with Category = Event; VIPs reached used as sign-ups). Events in both sources are listed once.
+   Totals below are calculated from the list. */
+const EVENTS_OUTREACH_MERGED = true;
+if (EVENTS_Q3.length) {
+  IND.ev_count.q3 = EVENTS_Q3.length;
+  IND.ev_signups_ex.q3 = EVENTS_Q3.reduce((s, e) => s + e.signups, 0);
+  if (typeof IND.cb_north.q3 === 'number' && typeof IND.cb_south.q3 === 'number') IND.ev_signups.q3 = IND.ev_signups_ex.q3 + IND.cb_north.q3 + IND.cb_south.q3;
+}
+// { date:'Jul 07', name:'…', type:'Event' | 'Awareness', faculty:'Health', resp:'…', vips: 12 }
+const OUTREACH_Q3 = [
+  { date:"Aug 24", name:"IN retreat", type:"Awareness", faculty:"Health", resp:"Hanne", vips:150 },
+  { date:"Sep 03", name:"Co-founder run", type:"Event", faculty:"UCPH Across", resp:"Neta", vips:120 },
+  { date:"Aug 20", name:"SAXO Department Seminar", type:"Awareness", faculty:"Humanities", resp:"Anne D.", vips:50 },
+  { date:"Aug 26", name:"Micro-biology cluster", type:"Event", faculty:"Science", resp:"Klavs", vips:50 },
+  { date:"Jul 05", name:"LH + case presentations", type:"Awareness", faculty:"Social Sciences", resp:"Kristoffer", vips:40 },
+  { date:"Sep 06", name:"MasterClass: Funding in Life Sciences", type:"Event", faculty:"Health", resp:"Neta and Peter", vips:34 },
+  { date:"Jul 09", name:"PhD workshop", type:"Awareness", faculty:"Health", resp:"Gergana and Hanne", vips:20 },
+  { date:"Sep 28", name:"JURFORSK", type:"Awareness", faculty:"Law", resp:"Henrik and Anne D.", vips:10 }
+];
+
+/* ── Narrative text (empty = "to be written" placeholder) ─────────────────── */
+const INSIGHTS = {
+  exec_nurture: "<strong>Student Innovation &amp; Entrepreneurship — curricular reach and awareness are already above the full-year 2025 totals, while student leads and educators slowed.</strong> Students in curricular courses stand at 954 after three quarters (110% of 2025) and student awareness reach at 1,596 (112%), even though Q3 was lower than Q2 on both (200 vs 340 and 593 vs 774). ECTS projects rebounded to 17 (from 8), driven by Humanities (12), and are at 88% of 2025. Student leads fell to 10 — the lowest quarter this year and 68% of the 2025 total YTD — and educators engaged fell from 192 to 61.",
+  exec_engage: "<strong>Programmes and events — fewer events but a larger turnout, and Explore carried the programme intake.</strong> Q3 had 18 events (32 in Q2) with 1,609 sign-ups excl. Community Breakfast (+15% on Q2); the 10 events with 50+ sign-ups account for 90% of them, led by Tech BBQ day 0 with 700. Four of the 10 programmes had uptake in Q3 and 201 individuals were accepted (86 in Q2), 134 of them in Explore, bringing the YTD total to 564 — 118% of the full-year 2025 figure. Open Entrepreneurship reports teams only (32 accepted teams), so its participants are not part of the individual count.",
+  exec_empower: "<strong>Researcher Innovation &amp; Entrepreneurship — commercialisation outcomes are well ahead of Q3 2025, while PoC funding fell back.</strong> IDFs (25 vs 16 in Q3 2025), licences (7 vs 4) and spin-outs (6 vs 1) are all up year-on-year, and YTD IDFs and spin-outs are already above their full 2025 totals (86 vs 66 and 10 vs 7); licences are at 76% of 2025. PoC funded dropped from 31 to 14 (applications 35 → 28) but is still up on Q3 2025 (8) and at 108% of 2025 YTD — grants can shift to the following quarter when deadlines fall close to a quarter-end. Science overtook Health as the largest source of leads (33 vs 28), and researcher outreach reached 474 VIPs across 8 activities.",
+  curr: "<strong>Curricular reach slowed in Q3 but is already above the full 2025 total.</strong> 200 students in Q3 (340 in Q2) take the YTD to 954 — 110% of 2025's 869. Health (75) and Social Sciences (65) continued, while Science (100 → 0) and Humanities (65 → 0) had no reach in Q3 and UCPH Across appeared with 60 students; the number of courses fell from 7 to 3. Science (148%) and Humanities (135%) are already well above their 2025 totals, while Health is at 72%. Law and Theology still show no curriculum reach.",
+  ects: "<strong>Humanities drove the strongest ECTS quarter of the year.</strong> 17 ECTS projects in Q3 — more than double Q2's 8 — with Humanities contributing 12 (2 in Q2) and Science 4. Health had 1, while Social Sciences and Theology had none. YTD stands at 38 of 43 (88%); Humanities (21) is already three times its full 2025 total of 7, whereas Health (3 of 11) and Science (10 of 18) are still well below theirs.",
+  educators: "<strong>Educators engaged fell to 61 after a strong Q2 (192).</strong> YTD stands at 355 educators reached. Since the indicator has no 2025 baseline and counts are not unique persons, it can only be read quarter-on-quarter — and Q3 is the lowest quarter so far, in line with fewer curricular courses (3 vs 7 in Q2).",
+  aware: "<strong>Awareness reach fell back but is spread more evenly across faculties, and student leads dropped to their lowest level.</strong> Reach was 593 (774 in Q2), and UCPH Across fell from 94% to 28% of the total; Science (256), Social Sciences (83) and Health (78) now carry most of it, from 14 activities (8 in Q2) — 42 students per activity vs 97 in Q2. YTD reach is 1,596, or 112% of 2025. Student leads fell from 28 to 10 (68% of 2025 YTD, below the 75% pace line), and 4 of the 10 have no faculty registered. We have seen a natural drop in intro bookings because leads are now being pushed into Community Intro Sessions instead. Fewer intro bookings therefore make sense, but it also means we should reconsider this KPI.",
+  platform: "",
+  events: "<strong>Fewer but larger events — a handful carried the turnout.</strong> Ten of the 18 Q3 events had 50+ sign-ups and accounted for 90% of the 1,609 sign-ups; Tech BBQ day 0 (700) alone makes up 44%. The 3 medium events (20–49 sign-ups) added 7% and the 5 smallest (under 20) 3%. Average sign-ups per event doubled to 89 (44 in Q2), while the Community Breakfast fell to 6 sessions and 80 attendees (24 sessions and 172 in Q2).",
+  programmes: "<strong>Q3 ran on 4 of the 10 programmes, with Explore as the largest intake.</strong> Explore accepted 134 of 167 applicants (80%) — two thirds of the 201 individuals accepted in Q3 — and KU Innovators 27 of 27 (18 in Q2; 21 teams). The Sustainability Olympiad, which is only held in Q3, accepted 40 (55 in 2025), and Open Entrepreneurship reports 38 team applications and 32 accepted teams, without individual numbers. YTD, 564 individuals have been accepted — 118% of the 478 in 2025.",
+  faculty: "<strong>Q3 (n=201, 3 programmes): 67% of accepted participants were from outside UCPH</strong> — driven by Sustainability Olympiad (85%) and Explore (73%) — compared with 70% in Q1 and 21% in Q2. Among UCPH faculties, Humanities (22), Science (19) and Health (17) are best represented. KU Innovators is again the most faculty-diverse programme, with participants from 5 UCPH faculties, although 15 of its 27 participants are from Humanities. \"Unknown\" is 0% in Q3 (50% in Q2), as faculty data is complete for all three programmes. Open Entrepreneurship is not included, since it has no participant breakdown for Q3.",
+  acad: "<strong>Q3 (n=201): students (bachelor and master level) make up 94% of accepted participants.</strong> PhD/researchers are 5% (10 participants, 5 of them in the Sustainability Olympiad) and \"Other\" 1%. There is no \"Unknown\" in Q3 (50% in Q2), so the Q2 distortion from Open Entrepreneurship is not present — Open Entrepreneurship is not part of the Q3 breakdown. Compared with Q1 (85% students), the Q3 mix is more student-heavy, as SPARK Denmark (81% PhD/researchers in Q1) had no intake.",
+  gender: "<strong>Q3 (n=201): balanced overall — 49% female and 51% male — with complete gender data.</strong> No participants are \"Unknown\" (79% in Q2), so the Q2 data-collection gap does not affect Q3, and no participants identified as non-binary. Sustainability Olympiad skewed female (65%), Explore skewed male (56%), and KU Innovators was close to even (48% female / 52% male, up from 39% female in Q2).",
+  pipeline: "<strong>Commercialisation outcomes are well ahead of Q3 2025 — IDFs and spin-outs already exceed last year's full-year totals.</strong> IDFs reached 25 (16 in Q3 2025, +56%), licences 7 (4 in Q3 2025, +75%) and spin-outs 6 (1 in Q3 2025). YTD, IDFs (86) and spin-outs (10) are above the full 2025 totals (66 and 7), while licences (19) are at 76% of 2025's 25. Quarter-on-quarter, IDFs and licences eased (33 → 25 and 10 → 7) while spin-outs rose (4 → 6). Innovation leads held steady at 68 (67 in Q2). Active cases rose to 239 (189 in Q2). This is a quarter-end snapshot.",
+  funding: "",
+  res_depts: "<strong>Science overtook Health as the largest source of leads, and Health's licences fell back.</strong> Science generated 33 leads in Q3 (Health 28), together 88% of the 69 faculty-attributed leads. Niels Bohr Institute is the most active department (16 leads, 9 in Q2), followed by Drug Design &amp; Pharmacology (8), which also leads on IDFs (5) ahead of Niels Bohr Institute (4). Licences dropped in Health (7 → 1) while holding in Science (5), and spin-outs came from Science (4), Health (1) and, for the first time, Humanities (1, The Saxo Institute). On PoC, Science leads with 13 applications and 7 funded; Social Sciences had 3 applications and 3 funded (5/5 in Q2), Humanities 3 applications but none funded, and Law's single application was not funded.",
+  outreach: "<strong>Fewer activities but a larger reach per activity — Health still leads, and Social Sciences and Law appear for the first time.</strong> Q3 had 8 activities reaching 474 VIPs, an average of 59 per activity (30 in Q2, with 19 activities and 561 VIPs). Health accounts for 204 VIPs (43%), driven by the IN retreat (150), followed by UCPH Across (120, the Co-founder run, registered without a faculty), Science and Humanities (50 each), Social Sciences (40) and Law (10). Theology had no outreach activity in Q3."
+};
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RENDER CODE — normally no need to edit below this line
+   ═══════════════════════════════════════════════════════════════════════ */
+const C = { y25:'#c8d0d8', q1:'#2d7a3a', q2:'#d4843e', q3:'#5b21b6' };
+const jobs = [];
+const isNum = v => typeof v === 'number';
+const fmt = v => isNum(v) ? v.toLocaleString('en-US') : v;
+const TBA = '<span class="tba">TBA</span>';
+const cellVal = v => (v === null || v === undefined) ? TBA : (typeof v === 'string' && v.startsWith('—') ? `<span class="soft">${v}</span>` : fmt(v));
+const sum = a => a.reduce((s, v) => s + (isNum(v) ? v : (typeof v === 'string' && /^\d/.test(v) ? parseInt(v, 10) : 0)), 0);
+const hasData = a => Array.isArray(a) && a.length > 0;
+const num0 = v => isNum(v) ? v : 0;
+
+/* ── building blocks ── */
+function box(id, h) { return `<div style="position:relative;width:100%;height:${h}px;margin-bottom:6px"><canvas id="${id}"></canvas></div>`; }
+function legend(items, dots) { return `<div class="legend${dots ? ' dots' : ''}">` + items.map(i => `<span><i style="background:${i[1]}"></i>${i[0]}</span>`).join('') + '</div>'; }
+const LEG_Q = legend([['2025 total', C.y25], ['Q1 2026', C.q1], ['Q2 2026', C.q2], ['Q3 2026', C.q3]]);
+const LEG_Q3 = legend([['Q1 2026', C.q1], ['Q2 2026', C.q2], ['Q3 2026', C.q3]]);
+function sec(eyebrow, title, sub, body, pad) {
+  return `<div class="section"${pad ? ' style="padding-top:28px"' : ''}><div class="section-eyebrow">${eyebrow}</div><h2 class="section-title">${title}</h2>${sub ? `<p class="section-sub">${sub}</p>` : ''}${body}</div>`;
+}
+function chap(id, pre, title) { return `<div class="chapter"${id ? ` id="${id}"` : ''}><div class="chapter-pre">${pre}</div><h2>${title}</h2></div>`; }
+function ins(key) {
+  const t = INSIGHTS[key];
+  return t ? `<div class="insight">${t}</div>` : `<div class="insight insight-tbd">Q3 insight — to be written once the figures are in.</div>`;
+}
+const note = t => `<p class="fnote">${t}</p>`;
+const sep = t => `<div class="ind-sep">${t}</div>`;
+
+/* ── KPI tables ── */
+function kpiRow(r, o) {
+  let ytd, pct;
+  if (r.stock) { ytd = 'n/a*'; pct = 'n/a*'; }
+  else if (typeof r.q3 === 'string' && r.q3.startsWith('n/a')) { ytd = 'n/a'; pct = 'n/a'; }
+  else if (r.noYtd) { ytd = '—'; pct = '—'; }
+  else if (!isNum(r.q3)) { ytd = TBA; pct = (isNum(r.y25) && !r.noPace) ? TBA : '—'; }
+  else {
+    const s = sum([r.q1, r.q2, r.q3]);
+    ytd = fmt(s);
+    if (isNum(r.y25) && !r.noPace) { const p = Math.round(s / r.y25 * 100); pct = `<span class="${p >= REPORT.paceShare * 100 ? 'g' : 'a'}">${p}%</span>`; }
+    else pct = '—';
+  }
+  let d = '—';
+  if (isNum(r.q3) && isNum(r.q2)) d = r.q3 > r.q2 ? '↑' : r.q3 < r.q2 ? '↓' : '→';
+  let h = `<tr><td>${r.label}</td><td>${cellVal(r.q1)}</td><td>${cellVal(r.q2)}</td><td class="v">${cellVal(r.q3)}</td>`;
+  if (o.delta) h += `<td class="d">${d}</td>`;
+  if (o.yoy) h += `<td>${cellVal(r.yoy ? r.yoy.q3_2025 : '—')}</td>`;
+  h += `<td class="y">${ytd}</td><td>${cellVal(r.y25)}</td><td>${pct}</td>`;
+  if (o.note) h += `<td class="n">${r.note || ''}</td>`;
+  return h + '</tr>';
+}
+function kpiTable(rows, o) {
+  o = o || {};
+  const cols = 7 + (o.delta ? 1 : 0) + (o.yoy ? 1 : 0) + (o.note ? 1 : 0) + 1;
+  let h = '<div style="overflow-x:auto"><table class="kt"><thead><tr><th>Indicator</th><th>Q1 2026</th><th>Q2 2026</th><th class="cur">Q3 2026</th>';
+  if (o.delta) h += '<th class="cur">Q3 vs Q2</th>';
+  if (o.yoy) h += `<th>${o.yoy}</th>`;
+  h += `<th>${REPORT.ytdLabel.replace('2026 YTD', '2026<br>YTD')}</th><th>2025 (full year)</th><th>% of 2025 (YTD pace)</th>`;
+  if (o.note) h += '<th class="l">Note</th>';
+  h += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    if (r.group) h += `<tr class="grp"><td colspan="${cols}"><a href="${r.href}">${r.group} →</a></td></tr>`;
+    else h += kpiRow(r, o);
+  });
+  return h + '</tbody></table></div>';
+}
+const I = k => IND[k];
+const paceNote = `<p class="fnote">Colour-coding applies to "% of 2025 (YTD pace)": green = at or above ${Math.round(REPORT.paceShare * 100)}% (${REPORT.ytdLabel.replace(' YTD', '')} vs. full-year 2025), amber = below the ${Math.round(REPORT.paceShare * 100)}% pace line.</p>`;
+const STOCK_NOTE = '<p class="fnote">* Student users and startup-projects are totals at quarter-end, not additive across quarters — YTD and pace are n/a. Student users/startup-projects: Q1 and 2025 use the old method (all platform users and projects); from Q2 only currently active student users/projects are counted, so Q1 is not comparable with Q2 and later. Q3 vs Q2 is comparable. The Q2 values were recalculated for the Q3 report (users 26 → 143, startup-projects 11 → 71) after an error was found in the original Q2 calculation methodology, where only newcomers were calculated and not all active. Student users include users who are not from UCPH in all quarters (Q2: 54, Q3: 53); counting UCPH students only gives 89 in Q2 and 100 in Q3.</p>';
+
+/* ── Chart configs ── */
+const GC = 'rgba(128,128,128,0.1)', TC = 'rgba(120,120,120,0.75)';
+function ds(label, data, color, stack, extra) { return Object.assign({ label, data, backgroundColor: color, borderWidth: 0, stack }, extra || {}); }
+function stackedCfg(labels, s, title, fs) {
+  const z = a => (hasData(a) ? a.map(num0) : labels.map(() => 0));
+  const sets = [];
+  if (s.y25) sets.push(ds('2025 total', s.y25, C.y25, 'y2025'));
+  if (s.q1) sets.push(ds('Q1 2026', s.q1, C.q1, 'y2026'));
+  sets.push(ds('Q2 2026', s.q2, C.q2, 'y2026'));
+  sets.push(ds('Q3 2026', z(s.q3), C.q3, 'y2026'));
+  return { type: 'bar', data: { labels, datasets: sets }, options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+    scales: {
+      x: { grid: { color: GC }, ticks: { color: TC, font: { size: fs || 10 } }, border: { display: false } },
+      y: { min: 0, grid: { color: GC }, ticks: { color: TC, font: { size: 10 } }, title: { display: true, text: title, color: TC, font: { size: 9 } }, border: { display: false } }
+    } } };
+}
+function facChartBox(id, key, title, h, fs) {
+  const f = FACS[key];
+  jobs.push([id, stackedCfg(f.labels, f, title, fs)]);
+  return box(id, h);
+}
+function facCfgQ(labels, q1, q2, q3, rotate) {
+  const z = a => (hasData(a) ? a.map(num0) : labels.map(() => 0));
+  return { type: 'bar', data: { labels, datasets: [ds('Q1 2026', q1, C.q1, 's'), ds('Q2 2026', q2, C.q2, 's'), ds('Q3 2026', z(q3), C.q3, 's')] }, options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y > 0 ? c.dataset.label + ': ' + c.parsed.y : null } } },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: Object.assign({ color: TC, font: { size: rotate ? 9 : 10.5 } }, rotate ? { maxRotation: 55, minRotation: 55 } : {}), border: { display: false } },
+      y: { stacked: true, min: 0, grid: { color: GC }, ticks: { color: TC, font: { size: 10 }, precision: 0 }, border: { display: false } }
+    } } };
+}
+function pctBarCfg(labels, raw, names, colors) {
+  const pct = raw.map(row => { const t = sum(row); return row.map(v => t > 0 ? Math.round(v / t * 100) : 0); });
+  const datasets = names.map((n, i) => ({ label: n, data: pct.map(r => r[i]), backgroundColor: colors[i], borderRadius: 0 }));
+  return { type: 'bar', data: { labels, datasets }, options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: {
+      label: c => c.parsed.x > 0 ? c.dataset.label + ': ' + raw[c.dataIndex][c.datasetIndex] + ' (' + c.parsed.x + '%)' : null,
+      footer: items => 'Total accepted: ' + sum(raw[items[0].dataIndex]) } } },
+    scales: {
+      y: { stacked: true, grid: { display: false }, ticks: { font: { size: 10.5 }, color: '#8a94a6', autoSkip: false } },
+      x: { stacked: true, min: 0, max: 100, grid: { color: 'rgba(128,128,128,0.08)' }, ticks: { font: { size: 11 }, color: '#8a94a6', callback: v => v + '%', stepSize: 25 } }
+    } } };
+}
+
+/* ── Programme demographics: totals per quarter + per programme ── */
+const DEMO = {
+  fac:  { names:['Science','Health','Humanities','Social Sciences','Theology','Law','Unknown','Not from UCPH'], colors:['#2d7a3a','#425570','#197f8e','#d4843e','#c73028','#ffbd38','#e1dfdf','#666666'], key:'fac', title:'Faculty distribution' },
+  acad: { names:['Students','PhD / Researcher','Other','Unknown'], colors:['#0a5963','#3d8a94','#7abcc4','#e1dfdf'], key:'acad', title:'Academic level distribution' },
+  gen:  { names:['Female','Male','Other','Unknown'], colors:['#0a5963','#3d8a94','#7abcc4','#e1dfdf'], key:'gen', title:'Gender distribution' }
+};
+function demoBlock(d, idPrefix, insKey, extraNote) {
+  const totals = ['Q1', 'Q2', 'Q3'].map(q => {
+    const rows = PROG_DEMO.filter(r => r.q === q);
+    return d.names.map((_, i) => rows.reduce((s, r) => s + num0(r[d.key][i]), 0));
+  });
+  const nQ = totals.map(sum);
+  const idT = idPrefix + '_total', idP = idPrefix + '_prog';
+  jobs.push([idT, pctBarCfg(['Q1 2026 (n=' + nQ[0] + ')', 'Q2 2026 (n=' + nQ[1] + ')', 'Q3 2026 (' + (nQ[2] ? 'n=' + nQ[2] : 'no data yet') + ')'], totals, d.names, d.colors)]);
+  const labels = PROG_DEMO.map(r => `${r.p} — ${r.q}`);
+  jobs.push([idP, pctBarCfg(labels, PROG_DEMO.map(r => r[d.key]), d.names, d.colors)]);
+  const h = Math.max(200, 50 + labels.length * 34);
+  return `<div class="section-eyebrow" style="margin-top:0">${d.title} — total (all programmes) · by quarter · 100% stacked</div>`
+    + legend(d.names.map((n, i) => [n, d.colors[i]]), true)
+    + `<div style="position:relative;width:100%;height:150px;margin-bottom:20px"><canvas id="${idT}"></canvas></div>`
+    + `<div class="section-eyebrow" style="margin-top:0">${d.title} per programme — 100% stacked</div>`
+    + legend(d.names.map((n, i) => [n, d.colors[i]]), true)
+    + `<div style="position:relative;width:100%;height:${h}px;margin-bottom:6px"><canvas id="${idP}"></canvas></div>`
+    + note('Only programme-quarter combinations with data are shown for Q3. ' + (extraNote || ''))
+    + ins(insKey);
+}
+
+/* ── Department grids ── */
+const DEPT_COL = { 'Health': 'var(--sund)', 'Science': 'var(--science)', 'SSH / Law / Theo': 'var(--ssh)' };
+function deptGrid(prefix, group) {
+  let h = '<div class="three-col">';
+  Object.keys(group).forEach((k, i) => {
+    const d = group[k], id = `${prefix}_${i}`;
+    h += `<div class="card"><div class="card-title" style="color:${DEPT_COL[k]}">${k}</div>`;
+    if (!d.labels.length) h += '<p style="font-size:11px;color:var(--soft);margin-top:8px;font-style:italic">No departments recorded.</p>';
+    else { h += box(id, 190); jobs.push([id, facCfgQ(d.labels, d.q1, d.q2, d.q3, true)]); }
+    h += '</div>';
+  });
+  return h + '</div>' + LEG_Q3;
+}
+function combinedCfg(labels, a1, a2, a3, f1, f2, f3, rotate) {
+  const L = [], q1a = [], q2a = [], q3a = [], q1f = [], q2f = [], q3f = [];
+  labels.forEach((n, i) => {
+    L.push(n + ' — Apps'); L.push(n + ' — Funded');
+    q1a.push(a1[i], 0); q2a.push(a2[i], 0); q3a.push(num0((a3 || [])[i]), 0);
+    q1f.push(0, f1[i]); q2f.push(0, f2[i]); q3f.push(0, num0((f3 || [])[i]));
+  });
+  return { type: 'bar', data: { labels: L, datasets: [
+    ds('Q1 2026 (Applications)', q1a, 'rgba(45,122,58,0.4)', 's'), ds('Q2 2026 (Applications)', q2a, 'rgba(212,132,62,0.4)', 's'), ds('Q3 2026 (Applications)', q3a, 'rgba(91,33,182,0.4)', 's'),
+    ds('Q1 2026 (Funded)', q1f, C.q1, 's'), ds('Q2 2026 (Funded)', q2f, C.q2, 's'), ds('Q3 2026 (Funded)', q3f, C.q3, 's') ] }, options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y > 0 ? c.dataset.label + ': ' + c.parsed.y : null } } },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { color: TC, font: { size: rotate ? 8 : 9 }, maxRotation: rotate ? 65 : 55, minRotation: rotate ? 65 : 55 }, border: { display: false } },
+      y: { stacked: true, min: 0, grid: { color: GC }, ticks: { color: TC, font: { size: 10 }, precision: 0 }, border: { display: false } }
+    } } };
+}
+const LEG_POC = legend([['Applications (lighter shade)', 'rgba(120,120,120,0.35)'], ['Funded (full shade)', '#777']]);
+
+/* ── Lists ── */
+function eventRows() {
+  if (!EVENTS_Q3.length) return '<tr><td colspan="4" class="soft" style="font-style:italic">No Q3 events entered yet — add them to EVENTS_Q3.</td></tr>';
+  return EVENTS_Q3.slice().sort((a, b) => b.signups - a.signups).map(e => `<tr><td>${e.date}</td><td><span class="evt-name">${e.name}</span></td><td>${e.mgr || ''}</td><td style="text-align:right">${e.basis === 'none' ? '–' : fmt(e.signups)}</td></tr>`).join('');
+}
+function outreachRows() {
+  if (!OUTREACH_Q3.length) return '<tr><td colspan="5" class="soft" style="font-style:italic">No Q3 activities entered yet — add them to OUTREACH_Q3.</td></tr>';
+  return OUTREACH_Q3.map(e => `<tr><td>${e.date}</td><td><span class="evt-name">${e.name}</span> <span class="evt-badge" style="background:${e.type === 'Event' ? '#425570' : '#197f8e'}">${e.type}</span></td><td>${e.faculty}</td><td>${e.resp || ''}</td><td style="text-align:right">${e.vips === undefined || e.vips === null ? '–' : fmt(e.vips)}</td></tr>`).join('');
+}
+
+/* ── Programme table ── */
+function progTable() {
+  const GREY = 'color:var(--soft);font-style:italic';
+  const NA = `<span style="${GREY}">n/a</span>`, PTBA = `<span style="${GREY}">TBA</span>`;
+  /* one cell value: 0 / no intake -> "–"; "—" (not applicable) -> n/a; null (not reported) -> TBA */
+  const pv = v => v === 0 || v === undefined ? '<span style="color:var(--soft)">–</span>'
+    : v === null ? PTBA : (typeof v === 'string' && v.startsWith('—') ? NA : fmt(v));
+  const qcell = (q, key, qi) => {
+    if (q === null) return '<td class="n" style="text-align:right">' + PTBA + '</td>';
+    if (q === undefined) return '<td style="color:var(--soft)">–</td>';
+    return `<td class="v">${pv(q[key])}</td>`;
+  };
+  let h = '<div style="overflow-x:auto"><table class="prog-table"><thead><tr><th style="width:24%">Programme</th>'
+    + '<th>Applicants<br>2025</th><th>Accepted indiv.<br>2025</th>'
+    + '<th>Applicants<br>Q1 2026</th><th>Accepted indiv.<br>Q1 2026</th><th>Accepted projects<br>Q1 2026</th>'
+    + '<th>Applicants<br>Q2 2026</th><th>Accepted indiv.<br>Q2 2026</th><th>Accepted projects<br>Q2 2026</th>'
+    + '<th style="background:var(--bg)">Applicants<br>Q3 2026</th><th style="background:var(--bg)">Accepted indiv.<br>Q3 2026</th><th style="background:var(--bg)">Accepted projects<br>Q3 2026</th></tr></thead><tbody>';
+  PROG.forEach(p => {
+    h += `<tr><td>${p.name}</td>`
+      + [p.y25.app, p.y25.acc].map(v => `<td>${pv(v)}</td>`).join('')
+      + ['q1', 'q2', 'q3'].map(q => ['app', 'acc', 'proj'].map(k => {
+        const x = p[q];
+        if (x === null) return '<td style="background:#fafbfc">' + PTBA + '</td>';
+        if (x === undefined) return '<td style="color:var(--soft)">–</td>';
+        const v = x[k], plain = v === 0 || v === null || (typeof v === 'string' && v.startsWith('—'));
+        return `<td style="${q === 'q3' ? 'background:#fafbfc;' : ''}${plain ? '' : 'font-weight:600;color:var(--ink)'}">${pv(v)}</td>`;
+      }).join('')).join('') + '</tr>';
+  });
+  const tot = (get) => sum(PROG.map(get));
+  const totCell = (q, k) => {
+    const rows = PROG.filter(p => p[q] !== null && p[q] !== undefined);
+    if (q === 'q3' && rows.length === 0) return `<td>${TBA}</td>`;
+    return `<td>${fmt(sum(rows.map(p => p[q][k])))}</td>`;
+  };
+  h += '</tbody><tfoot><tr><td>Total</td>'
+    + `<td>${fmt(tot(p => p.y25.app))}</td><td>${fmt(tot(p => p.y25.acc))}</td>`
+    + ['q1', 'q2', 'q3'].map(q => ['app', 'acc', 'proj'].map(k => totCell(q, k)).join('')).join('')
+    + '</tr></tfoot></table></div>';
+  return h;
+}
+
+/* ── Platform trend (users / projects) ── */
+function trendCfg(y25, q1, q2, q3) {
+  const growth = [null, q1 - y25, null, isNum(q3) ? q3 - q2 : null, null];
+  const total = [y25, q1, q2, isNum(q3) ? q3 : null, null];
+  return { type: 'bar', data: { labels: ['2025', "Q1 '26", "Q2 '26", "Q3 '26", "Q4 '26"], datasets: [
+    { type: 'bar', label: 'Net growth (quarter)', data: growth,
+      backgroundColor: ['#c8d0d8', C.q1, 'rgba(138,148,166,0.14)', C.q3, 'rgba(138,148,166,0.14)'], borderWidth: 0, yAxisID: 'y1', order: 2 },
+    { type: 'line', label: 'Active total', data: total, borderColor: '#122947', backgroundColor: '#122947', spanGaps: true,
+      segment: { borderDash: ctx => (ctx.p1DataIndex === 2 || ctx.p1DataIndex >= 4 ? [4, 3] : undefined) },
+      pointRadius: 4, pointBackgroundColor: ['#8a94a6', '#122947', C.q2, C.q3, '#ccd3dd'], tension: 0.15, yAxisID: 'y', order: 1 } ] }, options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+    scales: {
+      x: { grid: { color: GC }, ticks: { color: TC, font: { size: 10 } }, border: { display: false } },
+      y: { position: 'left', grid: { color: GC }, ticks: { color: TC, font: { size: 9 } }, title: { display: true, text: 'Active total', color: TC, font: { size: 8 } }, border: { display: false } },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: TC, font: { size: 9 } }, title: { display: true, text: 'Net growth', color: TC, font: { size: 8 } }, border: { display: false } }
+    } } };
+}
+
+/* ═════════════ PAGE ═════════════ */
+function build() {
+  const R = REPORT; let h = '';
+  const exec = k => `<div class="obs-item"><div class="obs-dot"></div><div class="obs-body">${INSIGHTS[k] ? INSIGHTS[k] : '<em style="color:var(--soft)">Q3 summary — to be written once the figures are in.</em>'}</div></div>`;
+
+  /* Cover */
+  h += `<div class="cover"><div class="cover-eyebrow">KU Lighthouse — Innovation Center</div>
+  <h1>Quarterly Report<br><span>${R.quarter}</span> ${R.year}</h1>
+  <div class="cover-meta"><span class="cover-pill">Key Performance Indicators</span><span class="cover-pill">${R.period}</span>
+  <span class="cover-pill">Student Innovation &amp; Entrepreneurship · Programmes &amp; events · Researcher Innovation &amp; Entrepreneurship</span><span class="cover-pill">Internal — Management &amp; Teams</span><span class="cover-pill">Data per ${R.dataDate}</span></div>
+  <div class="cover-note">KU Lighthouse enhances innovation and entrepreneurship across the university. We foster ideas and solutions for the benefit of people, society and the environment. This report covers the following KU Lighthouse areas: Student Innovation &amp; Entrepreneurship, Researcher Innovation &amp; Entrepreneurship and Programmes and events in KU Lighthouse.</div></div>`;
+  h += '<div class="body-wrap">';
+  if (R.draft) h += '<div class="draft-banner"><strong>Draft template.</strong> Q1 and Q2 are final. Q3 figures show <span class="tba">TBA</span> until they are entered in the DATA block at the top of this file; YTD, % of 2025 and totals are then calculated automatically.</div>';
+
+  /* Exec summary */
+  h += sec('Executive Summary', `${R.quarter} ${R.year} — Key Learnings from KU Lighthouse`, '',
+    `<div class="obs-list">${exec('exec_nurture')}${exec('exec_engage')}${exec('exec_empower')}</div>`);
+
+  /* Top-line KPIs */
+  const topRows = [
+    { group: 'Student Innovation &amp; Entrepreneurship', href: '#chapter-student' },
+    I('curr_students'), I('ects'), I('educators'), I('aware_reach'), I('leads'), I('users'), I('projects'), I('cvr'),
+    { group: 'Programmes and events in KU Lighthouse', href: '#chapter-programmes' },
+    I('ev_signups'), Object.assign({}, I('prog_people'), { note: '' }),
+    { group: 'Researcher Innovation &amp; Entrepreneurship', href: '#chapter-researcher' },
+    I('inn_leads'), I('idfs'), I('poc_funded'), I('licences'), I('spinouts')
+  ];
+  h += sec(`Key Performance Indicators — Q1–Q3 ${R.year}`, 'Performance at a glance', '', kpiTable(topRows, { delta: true, note: true }) + paceNote + STOCK_NOTE);
+
+  /* ── Chapter 1: Student Innovation & Entrepreneurship ── */
+  h += chap('chapter-student', 'Chapter 1', 'Student Innovation &amp; Entrepreneurship');
+  h += sec('Students &amp; Curricular Courses', 'Students reached in Lighthouse-supported curricular courses', '',
+    kpiTable([I('curr_students'), I('curr_courses')]) + '<div class="two-col" style="margin-top:18px"><div class="card"><div class="card-title">Students in curricular courses — by faculty</div>'
+    + facChartBox('c_curr', 'curr_students', 'Students', 220, 10) + '</div><div class="card"><div class="card-title">Curricular courses — by faculty</div>'
+    + facChartBox('c_courses', 'curr_courses', 'Courses', 220, 10) + '</div></div>' + LEG_Q + ins('curr'), true);
+  h += sec('ECTS Projects by Faculty', 'ECTS-project distribution', '', kpiTable([I('ects')]) + '<div style="margin-top:14px"></div>' + facChartBox('c_ects', 'ects', 'Projects', 260, 11) + LEG_Q + ins('ects'));
+  h += sec('Educators Engaged in Capacity Building Activities', 'Scaling innovation capacities through educators',
+    'Educators engaged in Lighthouse activities such as Lighthouse-supported capacity building activities — an amplifier for curriculum reach, as educators might carry I&amp;E content into their own courses independently.',
+    kpiTable([I('educators')], { note: true }) + '<div style="margin-top:12px"></div>' + ins('educators'));
+  h += sec('Student Awareness &amp; Student Leads', 'Sparking interest for students', '',
+    kpiTable([I('aware_reach'), I('aware_acts'), I('leads')]) + '<div class="two-col" style="margin-top:18px"><div><p class="pcard-title">Student Awareness Reach by Faculty</p><p class="pcard-sub">Fairs, pop-ups and intro-presentations aimed at creating awareness of Lighthouse and our service offers.</p>'
+    + facChartBox('c_aware', 'aware_reach', 'Students', 190, 9) + '</div><div><p class="pcard-title">Student Leads by Faculty</p><p class="pcard-sub">A lead is an intro meeting — a first step in the student pipeline where students actively seek out Lighthouse.</p>'
+    + facChartBox('c_leads', 'leads', 'Leads', 190, 9) + '</div></div>' + LEG_Q + note('Faculty charts show leads and reach attributed to a UCPH faculty or UCPH Across/Beyond. Q3 student leads: 10 in total, of which 4 have no faculty registered (6 in the chart). 2025 reach now includes UCPH Beyond (60), so the 2025 bars add up to the 2025 total of 1,423.') + ins('aware'));
+
+  /* ── Chapter 1 (cont.): platform users, projects, CVR ── */
+  h += sec('Student Users &amp; Startup-Projects (Platform)', 'The Lighthouse digital ecosystem', 'Student users and startup-projects that are active during the given period.',
+    `<p class="section-sub" style="margin-top:-10px;color:var(--amber)"><strong>OBS:</strong> Data methodology changed from Q2. Q1 counted all users and startup-projects on the platform; from Q2 2026 only currently active student users and student startup-projects are counted.</p>`
+    + kpiTable([I('users'), I('projects'), I('cvr')], { delta: true, note: true }) + STOCK_NOTE
+    + '<div class="two-col" style="margin-bottom:6px"><div class="card"><div class="card-title">Student Users — Total &amp; Net Growth</div>' + box('c_users_trend', 200)
+    + '</div><div class="card"><div class="card-title">Student Startup-Projects — Total &amp; Net Growth</div>' + box('c_proj_trend', 200) + '</div></div>'
+    + note('Net growth = the given quarter vs. the previous quarter. Q1 growth is vs. 2025 (old method); no net growth is shown for Q2 because of the methodology change.')
+    + legend([['Active total (line)', '#122947'], ['Net growth (bar)', C.q1]])
+    + '<p class="pcard-title">Student Users by Faculty</p>' + facChartBox('c_users_fac', 'users', 'Active users', 260, 10) + LEG_Q3 + note('Student users include users who are not from UCPH (Q2: 54, Q3: 53), so the faculty chart adds up to the headline figure (143 in Q2, 153 in Q3). UCPH students only: 89 in Q2 and 100 in Q3.') + ins('platform'));
+  jobs.push(['c_users_trend', trendCfg(IND.users.y25, IND.users.q1, IND.users.q2, IND.users.q3)]);
+  jobs.push(['c_proj_trend', trendCfg(IND.projects.y25, IND.projects.q1, IND.projects.q2, IND.projects.q3)]);
+
+  /* ── Chapter 2: Programmes and events ── */
+  h += chap('chapter-programmes', 'Chapter 2', 'Programmes and events in KU Lighthouse');
+  const cbNote = s => `Sessions: Q1 ${s[0]} · Q2 ${s[1]} · Q3 ${s[2] === null ? 'TBA' : s[2]}`;
+  const evRows = [I('ev_count'), I('ev_signups_ex'), Object.assign({}, I('cb_north'), { note: cbNote(CB_SESSIONS.north) }), Object.assign({}, I('cb_south'), { note: cbNote(CB_SESSIONS.south) })];
+  h += sec(`Events ${R.quarter} ${R.year}`, 'Engagement in KU Lighthouse events', 'All events where KU Lighthouse hosted or co-hosted. Community Breakfast is tracked separately as a recurring format.',
+    kpiTable(evRows, { note: true }) + `<p class="pcard-title" style="margin-top:18px">Event list for ${R.quarter}</p><div style="overflow-x:auto"><table class="evt-table"><thead><tr><th>Date</th><th>Event</th><th>Responsible</th><th style="text-align:right">Sign-ups</th></tr></thead><tbody>${eventRows()}</tbody></table></div>`
+    + note('This table lists the current quarter\'s events only. Merged from two source sheets (Event list and "Events" from the Research Outreach list); events logged in both sources are merged and counted once. "–" = event with neither sign-ups nor headcount; counted as 0 in the total.')
+    + (EVENTS_OUTREACH_MERGED ? note('Q3 includes ' + EVENTS_Q3.filter(e => e.src === 'outreach').length + ' events from the Research Outreach list (' + EVENTS_Q3.filter(e => e.src === 'outreach').map(e => e.name).join(', ') + '); VIPs reached are used as sign-ups.') : '<p class="fnote" style="color:var(--amber)"><strong>OBS:</strong> Q3 events are from the KPI events sheet only — events of type "Event" from the Research Outreach list have not been added yet.</p>')
+    + ins('events') + '<details class="arch"><summary>Archive — Q2 2026 event list</summary><div style="overflow-x:auto"><table class="evt-table">    <thead>      <tr><th>Date</th><th>Event</th><th>Responsible</th><th style="text-align:right">Sign-ups</th></tr>    </thead>    <tbody><tr><td>Jun 18</td><td><span class="evt-name">Townhall 2026 vol II.</span></td><td>Bo</td><td style="text-align:right">542</td></tr><tr><td>May 06</td><td><span class="evt-name">Quantum Computing in Finance</span></td><td>Danny</td><td style="text-align:right">90</td></tr><tr><td>Apr 17</td><td><span class="evt-name">Friday Bar // By BeLuna: Working with Your Menstrual Cycle</span></td><td>Peter</td><td style="text-align:right">72</td></tr><tr><td>Jun 22</td><td><span class="evt-name">Thinking about business</span></td><td>Julie</td><td style="text-align:right">70</td></tr><tr><td>May 18</td><td><span class="evt-name">Fintech Launch</span></td><td>Danny</td><td style="text-align:right">69</td></tr><tr><td>May 05</td><td><span class="evt-name">MasterClass: Funding</span></td><td>Neta and Peter</td><td style="text-align:right">59</td></tr><tr><td>Apr 30</td><td><span class="evt-name">MasterClass Online: From AI to Asset: IP Strategy in Pharma &amp; Digital Health</span></td><td>Neta and Peter</td><td style="text-align:right">48</td></tr><tr><td>Jun 09</td><td><span class="evt-name">MasterClass: Funding in Life Sciences</span></td><td>Peter</td><td style="text-align:right">45</td></tr><tr><td>Apr 29</td><td><span class="evt-name">EXPLORE: IDEA LAB</span></td><td>Josefine</td><td style="text-align:right">41</td></tr><tr><td>May 27</td><td><span class="evt-name">Women&#39;s Health innovations</span></td><td>Neta</td><td style="text-align:right">33</td></tr><tr><td>Jun 27</td><td><span class="evt-name">Womens Health (OE)</span></td><td>Neta</td><td style="text-align:right">32</td></tr><tr><td>Apr 28</td><td><span class="evt-name">Health Innovators Pitch Celebration 2026</span></td><td>Peter</td><td style="text-align:right">29</td></tr><tr><td>May 19</td><td><span class="evt-name">MasterClass: Navigating the entrepreneurial ecosystem</span></td><td>Peter</td><td style="text-align:right">29</td></tr><tr><td>Jun 17</td><td><span class="evt-name">Lighthouse Launch: Insight Pitch Night!</span></td><td>Jesse</td><td style="text-align:right">28</td></tr><tr><td>Apr 23</td><td><span class="evt-name">Upcycling Lab: Let&#39;s redesign something together with Our Shift</span></td><td>Alida</td><td style="text-align:right">24</td></tr><tr><td>May 11</td><td><span class="evt-name">IKIGAI in Action – Create a project around what drives you</span></td><td>Alida</td><td style="text-align:right">24</td></tr><tr><td>May 20</td><td><span class="evt-name">KU Innovators Pitch Night</span></td><td>Benedicte</td><td style="text-align:right">23</td></tr><tr><td>May 12</td><td><span class="evt-name">IKIGAI in Action – Create a project around what drives you</span></td><td>Alida</td><td style="text-align:right">22</td></tr><tr><td>Apr 20</td><td><span class="evt-name">Workshop – Mobiliser ressourcer til dit forenings-, kultur- eller studiemiljøprojekt</span></td><td>Alida</td><td style="text-align:right">16</td></tr><tr><td>Jun 02</td><td><span class="evt-name">Community Intro Session</span></td><td>Peter</td><td style="text-align:right">16</td></tr><tr><td>Apr 14</td><td><span class="evt-name">MasterClass: AI &amp; Social Sciences Innovation</span></td><td>Peter</td><td style="text-align:right">15</td></tr><tr><td>Apr 07</td><td><span class="evt-name">Free Lunch Session: Skills for Change Kick Off Event</span></td><td>Alida</td><td style="text-align:right">11</td></tr><tr><td>Jun 09</td><td><span class="evt-name">ICDK x IDC Life Sciences Networking Lunch</span></td><td>Bo</td><td style="text-align:right">10</td></tr><tr><td>Jun 10</td><td><span class="evt-name">LH WorkSession: From procrastination to action</span></td><td>Peter</td><td style="text-align:right">10</td></tr><tr><td>Apr 08</td><td><span class="evt-name">Community Intro Session</span></td><td>Peter</td><td style="text-align:right">8</td></tr><tr><td>May 04</td><td><span class="evt-name">Community Intro Session</span></td><td>Peter</td><td style="text-align:right">8</td></tr><tr><td>Apr 14</td><td><span class="evt-name">ToRS Innoforløb WS #2</span></td><td>Anne D.</td><td style="text-align:right">7</td></tr><tr><td>May 19</td><td><span class="evt-name">ToRS Innoforløb WS #3</span></td><td>Anne D.</td><td style="text-align:right">6</td></tr><tr><td>Apr 15</td><td><span class="evt-name">BRIC Innovation Cafe</span></td><td>Neta</td><td style="text-align:right">4</td></tr><tr><td>May 06</td><td><span class="evt-name">BRIC Innovation Cafe</span></td><td>Neta</td><td style="text-align:right">4</td></tr><tr><td>Jun 03</td><td><span class="evt-name">BRIC Innovation Cafe</span></td><td>Neta and Telma</td><td style="text-align:right">4</td></tr><tr><td>Apr 27</td><td><span class="evt-name">LH WorkSession: Pitch training – Week #18 (Cancled)</span></td><td>Peter</td><td style="text-align:right">0</td></tr></tbody></table></div></details>'
+    + '<details class="arch"><summary>Archive — Q1 2026 event list</summary><div style="overflow-x:auto"><table class="evt-table">    <thead>      <tr><th>Date</th><th>Event</th><th>Responsible</th><th style="text-align:right">Sign-ups</th></tr>    </thead>    <tbody>      <tr><td>Mar 06</td><td><span class="evt-name">Hackathon: Disability Tech Hackathon</span></td><td>Empower</td><td>122</td></tr>      <tr><td>Feb 10</td><td><span class="evt-name">FoodHack Copenhagen: Alternative Proteins &amp; Technology</span></td><td>Engage</td><td>67</td></tr>      <tr><td>Mar 17</td><td><span class="evt-name">MasterClass: Partnerships &amp; Growth in Healthcare</span></td><td>Engage</td><td>48</td></tr>      <tr><td>Mar 14</td><td><span class="evt-name">KU Lighthouse Friday Bar — hosted by Nøgensnegl</span></td><td>Engage</td><td>45</td></tr>      <tr><td>Feb 16</td><td><span class="evt-name">Gender Lunch at Lighthouse</span></td><td>Engage</td><td>25</td></tr>      <tr><td>Mar 12</td><td><span class="evt-name">KU Innovators Pitch Night</span></td><td>Nurture</td><td>24</td></tr>      <tr><td>Jan 28</td><td><span class="evt-name">LH WorkSession: Formalities of forming a company</span></td><td>Engage</td><td>15</td></tr>      <tr><td>Mar 19</td><td><span class="evt-name">Sund Kapital — Når du trives, trives din virksomhed</span></td><td>Engage</td><td>15</td></tr>      <tr><td>Mar 04</td><td><span class="evt-name">Community Intro Session</span></td><td>Engage</td><td>14</td></tr>      <tr><td>Jan 16</td><td><span class="evt-name">Pitch Event: Student Perspectives on Health Innovation in Kibera</span></td><td>Nurture</td><td>12</td></tr>      <tr><td>Feb 16</td><td><span class="evt-name">LH WorkSession: Bookkeeping before VAT accounting</span></td><td>Engage</td><td>5</td></tr>      <tr><td>Feb 05</td><td><span class="evt-name">LH WorkSession: Pitch Training Week #6</span></td><td>Engage</td><td>4</td></tr>      <tr><td>Jan 13</td><td><span class="evt-name">Community Intro Session</span></td><td>Engage</td><td>4</td></tr>      <tr><td>Mar 13</td><td><span class="evt-name">WorkSession: Early validation — &quot;The Mom Test&quot;</span></td><td>Engage</td><td>3</td></tr>      <tr><td>Feb 03</td><td><span class="evt-name">Community Intro Session</span></td><td>Engage</td><td>2</td></tr>      <tr><td>Feb 25</td><td><span class="evt-name">Community Meet-up: February 25</span></td><td>Engage</td><td>2</td></tr>      <tr><td>Mar 10</td><td><span class="evt-name">LH WorkSession: Pitch Training Week #10</span></td><td>Engage</td><td>1</td></tr>      <tr><td>Mar 26</td><td><span class="evt-name">LH WorkSession: Pitch Training Week #15</span></td><td>Engage</td><td>1</td></tr>      </tbody>  </table></div></details>', true);
+
+  /* programmes (same chapter as events) */
+  h += sec('Programme Overview', 'Programmes in KU Lighthouse', '',
+    kpiTable([I('prog_active'), I('prog_people'), I('prog_projects')], { note: true })
+    + '<div class="section-eyebrow" style="margin-top:20px">Programme breakdown</div>'
+    + progTable() + note('* Project (team) applications, not individual applicants. "–" = no intake · n/a = not applicable for this programme. Applicant totals include team applications counted as one each. Q3: Open Entrepreneurship reports teams only (38 team applications, 32 accepted teams) — no participant numbers; Sustainability Olympiad had over 100 sign-ups, but many could not participate.') + ins('programmes'));
+  h += sec('Faculty Representation in Programmes', 'Faculty diversity across programmes', '', demoBlock(DEMO.fac, 'd_fac', 'faculty', 'Open Entrepreneurship is "Co-founder run" in the source data. Q3 covers KU Innovators, Explore and Sustainability Olympiad (201 accepted); Open Entrepreneurship has no participant breakdown for Q3 and is not shown.'));
+  h += sec('Academic Level in Programmes', 'Academic level diversity across programmes', '', demoBlock(DEMO.acad, 'd_acad', 'acad'));
+  h += sec('Gender Balance in Programmes', 'Gender diversity across programmes', '', demoBlock(DEMO.gen, 'd_gen', 'gender'));
+
+  /* ── Chapter 3: Researcher Innovation & Entrepreneurship ── */
+  h += chap('chapter-researcher', 'Chapter 3', 'Researcher Innovation &amp; Entrepreneurship');
+  const yoyLab = 'Q3 2025';
+  h += sec('Innovation Funnel', 'From lead to commercialisation — pipeline status', 'The researcher innovation pipeline tracks research innovations from first contact to spin-out or licensing.',
+    kpiTable([I('inn_leads'), I('idfs'), I('licences'), I('spinouts'), I('active_cases')], { yoy: yoyLab })
+    + note('The same-quarter-last-year column compares Q3 2026 with Q3 2025 where available (Q2 2025 values are kept in the DATA block under yoy.q2_2025). Active cases is a total at quarter-end, not additive — YTD and pace are n/a.')
+    + facChartBox('c_pipeline', 'pipeline', 'Count', 260, 10) + LEG_Q + ins('pipeline'), true);
+
+  const succ = q => { const a = IND.poc_apps[q], f = IND.poc_funded[q]; return isNum(a) && isNum(f) && a > 0 ? Math.round(f / a * 100) + '%' : 'TBA'; };
+  h += sec('Funding: PoC Grants &amp; InnoExplore', 'Two funding tracks supporting researcher innovation',
+    'KU Lighthouse supports researchers through two main funding tracks: internal PoC grants (Proof of Concept projects funded by UCPH) and InnoExplore (external grants from Innovation Fund Denmark for spinout-pathway projects).',
+    kpiTable([I('poc_apps'), I('poc_funded'), I('ie_apps'), I('ie_decl'), I('ie_funded')], { yoy: yoyLab })
+    + '<div style="margin-top:18px"></div>' + facChartBox('c_funding', 'funding', 'Count', 260, 9.5) + LEG_Q
+    + note(`PoC success rate (funded / applications): Q1 ${succ('q1')}, Q2 ${succ('q2')}, Q3 ${succ('q3')}. When PoC deadlines fall close to a quarter-end, grants may be awarded in the following quarter, so the figures can look uneven. InnoExplore Q3: 18 applicants; supported declarations and received funding are not yet available (TBA), so the chart shows no Q3 bars for them.`) + ins('funding'));
+
+  /* Researcher metrics */
+  let r = `<div class="section-eyebrow">Researcher Metrics by Faculty &amp; Department — Q1–Q3 ${R.year}</div><h2 class="section-title">Where in the university is innovation happening?</h2>`;
+  const FL = ['Health', 'Science', 'Humanities', 'Social Sciences', 'Law', 'Theology'];
+  const facOnly = (id, key, ttl) => { const f = RES_FAC[key]; jobs.push([id, facCfgQ(FL, f.q1, f.q2, f.q3, false)]); return sep(ttl) + box(id, 200) + LEG_Q3; };
+  r += facOnly('r_leads', 'leads', 'Leads by Faculty') + sep('Leads by Department') + deptGrid('rd_leads', DEPT.leads);
+  r += facOnly('r_idfs', 'idfs', 'IDFs by Faculty') + sep('IDFs by Department') + deptGrid('rd_idfs', DEPT.idfs);
+  const pf = RES_FAC;
+  jobs.push(['r_poc', combinedCfg(FL, pf.poc_apps.q1, pf.poc_apps.q2, pf.poc_apps.q3, pf.poc_funded.q1, pf.poc_funded.q2, pf.poc_funded.q3, false)]);
+  r += sep('PoC Applications + Funded — by Faculty') + box('r_poc', 260) + LEG_POC + LEG_Q3
+    + note('Applications and Funded shown as adjacent bars — lighter shade for Applications, full shade for Funded — each bar stacked by quarter.');
+  r += sep('PoC Applications + Funded — by Department') + '<div class="three-col">';
+  Object.keys(DEPT.poc).forEach((k, i) => {
+    const d = DEPT.poc[k], id = 'rd_poc_' + i;
+    jobs.push([id, combinedCfg(d.labels, d.appsQ1, d.appsQ2, d.appsQ3, d.fundedQ1, d.fundedQ2, d.fundedQ3, true)]);
+    r += `<div class="card"><div class="card-title" style="color:${DEPT_COL[k]}">${k}</div>${box(id, 240)}</div>`;
+  });
+  r += '</div>' + LEG_POC + LEG_Q3;
+  r += facOnly('r_lic', 'licences', 'Licences by Faculty') + sep('Licences by Department') + deptGrid('rd_lic', DEPT.licences);
+  r += facOnly('r_spin', 'spinouts', 'Spin-outs by Faculty') + sep('Spin-outs by Department') + deptGrid('rd_spin', DEPT.spinouts);
+  r += note('Faculty and department figures can differ slightly from the totals (Q3: leads 69 across faculties vs 68 in total, IDFs 26 vs 25). Departments with Q3 activity but none in Q1–Q2 are added to the department charts.') + ins('res_depts');
+  h += `<div class="section">${r}</div>`;
+
+  /* Researcher outreach */
+  h += sec('Research Awareness &amp; Understanding Outreach', 'Reaching researchers before the pipeline', '',
+    kpiTable([I('res_acts'), I('res_vip')])
+    + note('New data source, first reported in Q2 2026 — no Q1 baseline or 2025 comparison exists. Activities without a VIP figure are counted in the activity total but contribute 0 to VIP reach. Activities include both Awareness and Event entries in the Research Outreach list. Q3: Co-founder run has no faculty registered (open to all faculties) and is shown under UCPH Across; the monthly SPARK Mentor meeting has no date or number and is not included.')
+    + '<p class="pcard-title">VIP Awareness &amp; Understanding Reach by Faculty</p>' + facChartBox('c_vip', 'vip', 'VIPs reached', 220, 10)
+    + legend([['Q2 2026', C.q2], ['Q3 2026', C.q3]])
+    + `<p class="pcard-title">Activity list for ${R.quarter}</p><div style="overflow-x:auto"><table class="evt-table"><thead><tr><th>Date</th><th>Activity</th><th>Faculty</th><th>Responsible</th><th style="text-align:right">VIPs reached</th></tr></thead><tbody>${outreachRows()}</tbody></table></div>`
+    + ins('outreach') + '<details class="arch"><summary>Archive — Q2 2026 activity list</summary><div style="overflow-x:auto"><table class="evt-table">    <thead>      <tr><th>Date</th><th>Activity</th><th>Faculty</th><th>Responsible</th><th style="text-align:right">VIPs reached</th></tr>    </thead>    <tbody>      <tr><td>Jun 22</td><td><span class="evt-name">Thinking about Business</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>UCPH Across</td><td>Julie</td><td style="text-align:right">70</td></tr>      <tr><td>May 01</td><td><span class="evt-name">Medicinal Kemi og Innovation</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Health</td><td>Hanne</td><td style="text-align:right">50</td></tr>      <tr><td>May 19</td><td><span class="evt-name">LH + case presentations</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Science</td><td>Kristoffer / Torben</td><td style="text-align:right">50</td></tr>      <tr><td>May 28</td><td><span class="evt-name">LH + case presentations</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Science</td><td>Kristoffer / Anne D.</td><td style="text-align:right">50</td></tr>      <tr><td>Jun 24</td><td><span class="evt-name">Innovation &amp; LH presentation</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Humanities</td><td>Anne D.</td><td style="text-align:right">50</td></tr>      <tr><td>Apr 30</td><td><span class="evt-name">MasterClass Online: From AI to Asset: IP Strategy in Pharma &amp; Digital Health</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Health</td><td>Neta and Peter</td><td style="text-align:right">48</td></tr>      <tr><td>May 05</td><td><span class="evt-name">MasterClass: Funding</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Health</td><td>Neta and Peter</td><td style="text-align:right">45</td></tr>      <tr><td>May 18</td><td><span class="evt-name">PhD workshop</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Health</td><td>Gergana and Hanne</td><td style="text-align:right">40</td></tr>      <tr><td>May 28</td><td><span class="evt-name">Innovation Workshop at ING</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Science</td><td>Anne D./Kristoffer</td><td style="text-align:right">35</td></tr>      <tr><td>May 27</td><td><span class="evt-name">Women&#39;s Health innovations</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Health</td><td>Neta</td><td style="text-align:right">33</td></tr>      <tr><td>Apr 03</td><td><span class="evt-name">BRIDGE program</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Health</td><td>Hanne</td><td style="text-align:right">30</td></tr>      <tr><td>Jun 17</td><td><span class="evt-name">LH + case presentations</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Science</td><td>Kristoffer / Klavs</td><td style="text-align:right">20</td></tr>      <tr><td>May 19</td><td><span class="evt-name">HUM Mangfoldighedsudvalg</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Humanities</td><td>Anne D.</td><td style="text-align:right">15</td></tr>      <tr><td>Apr 14</td><td><span class="evt-name">ToRS Innoforløb WS #2</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Humanities</td><td>Anne D.</td><td style="text-align:right">7</td></tr>      <tr><td>May 19</td><td><span class="evt-name">ToRS Innoforløb WS #3</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Humanities</td><td>Anne D.</td><td style="text-align:right">6</td></tr>      <tr><td>Apr 15</td><td><span class="evt-name">BRIC Innovation Cafe</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Health</td><td>Neta</td><td style="text-align:right">4</td></tr>      <tr><td>May 06</td><td><span class="evt-name">BRIC Innovation Cafe</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Health</td><td>Neta</td><td style="text-align:right">4</td></tr>      <tr><td>Jun 03</td><td><span class="evt-name">BRIC Innovation Cafe</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#425570;color:#fff;font-weight:500">Event</span></td><td>Health</td><td>Neta and Telma</td><td style="text-align:right">4</td></tr>      <tr><td>Apr 03</td><td><span class="evt-name">—</span> <span style="font-size:8.5px;padding:1px 6px;border-radius:8px;background:#197f8e;color:#fff;font-weight:500">Awareness</span></td><td>Health</td><td>Gergana</td><td style="text-align:right">–</td></tr>      </tbody>  </table></div></details>');
+
+  h += '</div>'; /* body-wrap */
+  h += `<div class="body-wrap"><div class="footer"><p style="text-align:center">KU Lighthouse &nbsp;·&nbsp; ${R.quarter} ${R.year} Quarterly Report &nbsp;·&nbsp; For internal use<br>&copy; KU Lighthouse</p></div></div>`;
+  return h;
+}
+
+document.getElementById('app').innerHTML = build();
+Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+Chart.defaults.font.size = 11;
+jobs.forEach(j => new Chart(document.getElementById(j[0]), j[1]));
+</script>
+</body>
+</html>
